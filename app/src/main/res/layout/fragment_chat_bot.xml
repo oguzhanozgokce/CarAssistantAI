@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.ChatBotFragment">
+    tools:context=".ui.chat.ChatBotFragment">
 
     <TextView
         android:id="@+id/textViewTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Chat Car"
+        android:text="@string/chat_car"
         android:textSize="24sp"
         android:padding="16dp"
         android:gravity="center_horizontal"
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="16dp"
-                android:text="What is your name?"
+                android:text="@string/what_is_your_name"
                 android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
 
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="16dp"
-                android:text="How can I help you?"
+                android:text="@string/how_can_i_help_you"
                 android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
 
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="16dp"
-                android:text="Tell me a joke."
+                android:text="@string/tell_me_a_joke"
                 android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
     </LinearLayout>
@@ -125,20 +125,36 @@
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:hint="Type a message"
+            android:autofillHints="Type a message"
+            android:hint="@string/type_a_message"
             android:background="@drawable/edit_text_background"
             android:padding="8dp"
             android:layout_marginEnd="8dp"
             android:inputType="text" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <ImageView
             android:id="@+id/buttonSend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send"
-            android:layout_gravity="center"
-            android:background="@drawable/button_background"
-            android:textColor="@color/black" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/round_button_background"
+            android:contentDescription="@string/send_message"
+            android:padding="10dp"
+            android:src="@drawable/icon_send_24"
+            android:layout_marginStart="4dp" />
+
+        <ImageView
+            android:id="@+id/buttonMic"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/round_button_background"
+            android:contentDescription="@string/microphone"
+            android:padding="10dp"
+            android:src="@drawable/icon_mic"
+            android:layout_marginStart="4dp" />
+
+
+
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

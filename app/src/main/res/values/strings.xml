@@ -2,4 +2,11 @@
     <string name="app_name">CarAssistantAI</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="type_a_message">Type a message</string>
+    <string name="tell_me_a_joke">Tell me a joke.</string>
+    <string name="how_can_i_help_you">How can I help you?</string>
+    <string name="what_is_your_name">What is your name?</string>
+    <string name="chat_car">Chat Car</string>
+    <string name="send_message">Send message</string>
+    <string name="microphone">microphone</string>
 </resources>

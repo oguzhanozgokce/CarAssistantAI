@@ -3,16 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/chatBotFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/chatBotFragment"
-        android:name="com.oguzhanozgokce.carassistantai.ui.ChatBotFragment"
+        android:name="com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment"
         android:label="fragment_chat_bot"
         tools:layout="@layout/fragment_chat_bot" />
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.oguzhanozgokce.carassistantai.ui.MapsFragment"
+        android:name="com.oguzhanozgokce.carassistantai.ui.map.MapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" />
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.oguzhanozgokce.carassistantai.ui.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_chatBotFragment"
+            app:destination="@id/chatBotFragment" />
+    </fragment>
 </navigation>

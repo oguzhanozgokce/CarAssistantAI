@@ -6,4 +6,5 @@
     </style>
 
     <style name="Theme.CarAssistantAI" parent="Base.Theme.CarAssistantAI" />
+
 </resources>
