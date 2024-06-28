@@ -19,6 +19,8 @@ okhttp = "4.11.0"
 navigation = "2.7.7"
 kotlinGradlePlugin = "1.9.0"
 generativeai = "0.8.0"
+maps = "19.0.0"
+location = "21.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +43,11 @@ androidx-navigation-safe-args-gradle-plugin = { module = "androidx.navigation:na
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
 gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "maps" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "location" }
+
+
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

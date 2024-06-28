@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.ui.chat
+package com.oguzhanozgokce.carassistantai.ui.chat.utils
 
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory

@@ -1,8 +1,9 @@
-package com.oguzhanozgokce.carassistantai.ui.chat
+package com.oguzhanozgokce.carassistantai.ui.chat.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.oguzhanozgokce.carassistantai.data.model.Message
 import com.oguzhanozgokce.carassistantai.databinding.ItemBotMessageBinding
 import com.oguzhanozgokce.carassistantai.databinding.ItemMessageBinding
 

@@ -67,6 +67,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.databinding.runtime)
 
+    //google maps
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+
 
 
     implementation("com.google.api-client:google-api-client-android:1.32.1")

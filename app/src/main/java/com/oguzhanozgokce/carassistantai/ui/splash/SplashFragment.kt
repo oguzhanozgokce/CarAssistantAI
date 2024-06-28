@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.ui
+package com.oguzhanozgokce.carassistantai.ui.splash
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -9,4 +9,6 @@
     <string name="chat_car">Chat Car</string>
     <string name="send_message">Send message</string>
     <string name="microphone">microphone</string>
+    <string name="GOOGLE_MAPS_API_KEY">AIzaSyBGhKZdJXpWbFmCyUAgeN6o9kbAnts0fDs</string>
+
 </resources>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.speech.RecognizerIntent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,13 @@ import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.Constant.YouTube_API_KEY
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.visible
+import com.oguzhanozgokce.carassistantai.data.model.Message
 import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
+import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.MapUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.YouTubeHelper
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.YouTubeUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,10 +35,13 @@ import java.util.Locale
 class ChatBotFragment : Fragment() {
     private var _binding: FragmentChatBotBinding? = null
     private val binding get() = _binding!!
-    private lateinit var adapter: MessageAdapter
+    private val adapter by lazy { MessageAdapter() }
+    private val commandProcessor by lazy { CommandProcessor(this) }
+
 
     companion object {
         private const val REQUEST_CODE_SPEECH_INPUT = 100
+        const val TAG = "ChatBotFragment"
     }
 
     override fun onCreateView(
@@ -44,7 +54,6 @@ class ChatBotFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupRecyclerView()
         setupButtonSend()
         setupMicButton()
@@ -52,9 +61,10 @@ class ChatBotFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = MessageAdapter()
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.apply {
+            adapter = this@ChatBotFragment.adapter
+            layoutManager = LinearLayoutManager(context)
+        }
     }
 
     private fun setupMicButton() {
@@ -63,11 +73,13 @@ class ChatBotFragment : Fragment() {
         }
     }
 
+
     private fun startVoiceInput() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Konuşun...")
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Konuşun...")
+        }
         try {
             startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
         } catch (e: Exception) {
@@ -78,9 +90,10 @@ class ChatBotFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SPEECH_INPUT && resultCode == AppCompatActivity.RESULT_OK && data != null) {
-            val result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            if (result != null && result.isNotEmpty()) {
-                binding.editTextMessage.setText(result[0])
+            data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.let { results ->
+                if (results.isNotEmpty()) {
+                    binding.editTextMessage.setText(results[0])
+                }
             }
         }
     }
@@ -92,7 +105,7 @@ class ChatBotFragment : Fragment() {
                 sendMessage(Message(message, false))
                 binding.editTextMessage.text.clear()
                 switchToChatMode()
-                processCommand(message)
+                commandProcessor.processCommand(message)
             }
         }
     }
@@ -108,7 +121,7 @@ class ChatBotFragment : Fragment() {
             val message = cardView.findViewById<TextView>(textViewId).text.toString()
             sendMessage(Message(message, false))
             switchToChatMode()
-            processCommand(message)
+            commandProcessor.processCommand(message)
         }
     }
 
@@ -117,58 +130,29 @@ class ChatBotFragment : Fragment() {
         binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
-    private fun sendBotMessage(message: String) {
+    fun sendBotMessage(message: String) {
         val botMessage = Message(message, true)
         adapter.addMessage(botMessage)
         binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
     }
-
 
     private fun switchToChatMode() {
         binding.questionLayout.gone()
         binding.recyclerView.visible()
     }
 
-    private fun processCommand(command: String) {
-        sendBotMessage("Tamamdır efendim, isteğiniz yerine getiriliyor...")
-        Handler(Looper.getMainLooper()).postDelayed({
-            when {
-                command.contains("YouTube", true) && command.contains("ac", true) -> {
-                    val query = command.substringAfter("YouTube").substringBefore(" ac").trim()
-                    searchAndOpenYouTube(query)
-                }
-                // Diğer komutları burada işleyebilirsiniz
-            }
-        }, 1000) // 1 saniye gecikme
+    fun searchAndOpenYouTube(query: String) {
+        YouTubeUtils.searchAndOpenYouTube(this, query)
     }
 
-    private fun searchAndOpenYouTube(query: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val videoId = getFirstVideoId(query)
-            if (videoId != null) {
-                withContext(Dispatchers.Main) {
-                    openYouTubeWithVideoId(videoId)
-                }
-            }
-        }
+    fun openGoogleMapsForDestination(destination: String) {
+        MapUtils.openGoogleMapsForDestination(this, destination)
     }
 
-    private fun getFirstVideoId(query: String): String? {
-        val youtubeHelper = YouTubeHelper(YouTube_API_KEY)
-        val results = youtubeHelper.searchVideos(query)
-        return results?.firstOrNull()?.id?.videoId
+    fun openGoogleMapsForSearch(query: String) {
+        MapUtils.openGoogleMapsForSearch(this, query)
     }
 
-    private fun openYouTubeWithVideoId(videoId: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$videoId"))
-        intent.setPackage("com.google.android.youtube")
-        if (intent.resolveActivity(requireActivity().packageManager) != null) {
-            startActivity(intent)
-        } else {
-            val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$videoId"))
-            startActivity(webIntent)
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -8,7 +8,7 @@
         android:title="Chat" />
 
     <item
-        android:id="@+id/mapsFragment"
+        android:id="@+id/mapFragment"
         android:icon="@drawable/maps_icon"
         android:title="Maps" />
 
