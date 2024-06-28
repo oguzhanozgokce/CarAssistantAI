@@ -3,33 +3,28 @@ package com.oguzhanozgokce.carassistantai.ui.chat
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.oguzhanozgokce.carassistantai.R
-import com.oguzhanozgokce.carassistantai.common.Constant.YouTube_API_KEY
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.visible
 import com.oguzhanozgokce.carassistantai.data.model.Message
 import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.ContactUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.GoogleUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.MapUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.YouTubeHelper
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.YouTubeUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class ChatBotFragment : Fragment() {
@@ -41,7 +36,31 @@ class ChatBotFragment : Fragment() {
 
     companion object {
         private const val REQUEST_CODE_SPEECH_INPUT = 100
+        const val REQUEST_CODE_CONTACT_PERMISSIONS = 101
         const val TAG = "ChatBotFragment"
+    }
+
+    val requestContactPermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.entries.all { it.value }
+        if (allGranted) {
+            // Handle the case where all permissions are granted
+        } else {
+            sendBotMessage("Gerekli izinler verilmedi.")
+        }
+    }
+
+    private val speechRecognizerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK && result.data != null) {
+            result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.let { results ->
+                if (results.isNotEmpty()) {
+                    binding.editTextMessage.setText(results[0])
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -76,25 +95,17 @@ class ChatBotFragment : Fragment() {
 
     private fun startVoiceInput() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
             putExtra(RecognizerIntent.EXTRA_PROMPT, "Konuşun...")
         }
         try {
-            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
+            speechRecognizerLauncher.launch(intent)
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_SPEECH_INPUT && resultCode == AppCompatActivity.RESULT_OK && data != null) {
-            data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.let { results ->
-                if (results.isNotEmpty()) {
-                    binding.editTextMessage.setText(results[0])
-                }
-            }
         }
     }
 
@@ -142,24 +153,8 @@ class ChatBotFragment : Fragment() {
     }
 
     fun openGoogleSearch(query: String) {
-        val encodedQuery = Uri.encode(query)
-        val googleSearchUri = Uri.parse("https://www.google.com/search?q=$encodedQuery")
-        val webIntent = Intent(Intent.ACTION_VIEW, googleSearchUri)
-
-        Log.d(TAG, "Google Search URI: $googleSearchUri")
-        Log.d(TAG, "Web Intent: $webIntent")
-
-        try {
-            startActivity(webIntent)
-            Log.d(TAG, "Web intent started successfully")
-        } catch (e: Exception) {
-            sendBotMessage("Google Search uygulaması bulunamadı")
-            Log.e(TAG, "Google Search uygulaması bulunamadı", e)
-
-            // Alternatif olarak kullanıcıya uyarı mesajı göstermek için bir dialog kullanabilirsiniz.
-            val fallbackUri = Uri.parse("https://www.google.com/search?q=$encodedQuery")
-            val fallbackIntent = Intent(Intent.ACTION_VIEW, fallbackUri)
-            startActivity(fallbackIntent)
+        GoogleUtils.openGoogleSearch(requireContext(), query) { errorMessage ->
+            sendBotMessage(errorMessage)
         }
     }
 
@@ -172,8 +167,12 @@ class ChatBotFragment : Fragment() {
         MapUtils.openGoogleMapsForDestination(this, destination)
     }
 
-    fun openGoogleMapsForSearch(query: String) {
-        MapUtils.openGoogleMapsForSearch(this, query)
+    fun findContactAndCall(contactName: String) {
+        ContactUtils.findContactAndCall(this, contactName)
+    }
+
+    fun findContactAndSendMessage(contactName: String, message: String) {
+        ContactUtils.findContactAndSendMessage(this, contactName, message)
     }
 
 

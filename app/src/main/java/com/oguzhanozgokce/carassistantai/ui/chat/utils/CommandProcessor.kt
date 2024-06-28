@@ -29,17 +29,35 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                         fragment.sendBotMessage("You didn't specify your destination.")
                     }
                 }
-                command.contains("ara", true) -> {
-                    val query = command.substringBefore("ara").trim()
+                command.contains("search", true) -> {   // search , query
+                    val query = command.substringBefore("search").trim()
                     Log.d(TAG, "Search query: $query")
                     if (query.isNotEmpty()) {
                         fragment.openGoogleSearch(query)
                     } else {
-                        fragment.sendBotMessage("Aramak istediğiniz yeri belirtmediniz.")
+                        fragment.sendBotMessage("You didn't specify where you wanted to call.")
+                    }
+                }
+                command.startsWith("Rehberden") && command.contains("ara", true) -> {       // Rehberden , name , ara
+                    val contactName = command.substringAfter("Rehberden").substringBefore("ara").trim()
+                    if (contactName.isNotEmpty()) {
+                        ContactUtils.findContactAndCall(fragment, contactName)
+                    } else {
+                        fragment.sendBotMessage("You didn't specify who you wanted to call.")
+                    }
+                }
+                command.contains("mesaj", true) -> {  // message , name , message_body
+                    val parts = command.split(" ")
+                    if (parts.size >= 4) {
+                        val contactName = parts[1]
+                        val message = parts.subList(2, parts.size).joinToString(" ")
+                        fragment.findContactAndSendMessage(contactName, message)
+                    } else {
+                        fragment.sendBotMessage("Mesaj göndermek için yeterli bilgi vermediniz.")
                     }
                 }
                 else -> {
-                    fragment.sendBotMessage("Üzgünüm, komutunuzu anlayamadım.")
+                    fragment.sendBotMessage("Sorry, I don't understand your command.")
                 }
             }
         }, 1000) // 1 saniye gecikme

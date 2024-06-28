@@ -12,7 +12,7 @@ object MapUtils {
         Log.e(ChatBotFragment.TAG, "Destination: $destination")
         val encodedDestination = Uri.encode(destination)
         Log.e(ChatBotFragment.TAG, "Encoded Destination: $encodedDestination")
-        val gmmIntentUri = Uri.parse("google.navigation:q=$encodedDestination")
+        val gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$encodedDestination")
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
             setPackage("com.google.android.apps.maps")
         }
@@ -27,22 +27,7 @@ object MapUtils {
         }
     }
 
-    fun openGoogleMapsForSearch(fragment: Fragment, query: String) {
-        Log.e(ChatBotFragment.TAG, "Search query: $query")
-        val encodedQuery = Uri.encode(query)
-        Log.e(ChatBotFragment.TAG, "Encoded Search Query: $encodedQuery")
-        val gmmIntentUri = Uri.parse("geo:0,0?q=$encodedQuery")
-        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
-            setPackage("com.google.android.apps.maps")
-        }
-        if (mapIntent.resolveActivity(fragment.requireActivity().packageManager) != null) {
-            fragment.startActivity(mapIntent)
-        } else {
-            val webIntent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://www.google.com/maps/search/?api=1&query=$encodedQuery")
-            )
-            fragment.startActivity(webIntent)
-        }
-    }
+    //val gmmIntentUri = Uri.parse("google.navigation:q=$encodedDestination")  // rota oluşturur
+    //val gmmIntentUri = Uri.parse("geo:0,0?q=$encodedDestination") // konum gösterir
+    //val gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$encodedDestination") // web de yol tarifi
 }
