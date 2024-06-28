@@ -64,6 +64,7 @@
                 android:layout_gravity="center"
                 android:padding="16dp"
                 android:text="@string/what_is_your_name"
+                android:textColor="@color/black"
                 android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
 
@@ -84,6 +85,7 @@
                 android:layout_gravity="center"
                 android:padding="16dp"
                 android:text="@string/how_can_i_help_you"
+                android:textColor="@color/black"
                 android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
 
@@ -102,6 +104,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="16dp"
+                android:textColor="@color/black"
                 android:text="@string/tell_me_a_joke"
                 android:textSize="18sp" />
         </androidx.cardview.widget.CardView>
@@ -127,6 +130,8 @@
             android:layout_weight="1"
             android:autofillHints="Type a message"
             android:hint="@string/type_a_message"
+            android:textColorHint="@color/text_color"
+            android:textColor="@color/black"
             android:background="@drawable/edit_text_background"
             android:padding="8dp"
             android:layout_marginEnd="8dp"
@@ -151,9 +156,6 @@
             android:padding="10dp"
             android:src="@drawable/icon_mic"
             android:layout_marginStart="4dp" />
-
-
-
     </LinearLayout>
 
 

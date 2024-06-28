@@ -21,7 +21,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                 }
 
                 command.contains("go", true) -> {
-                    val destination = command.substringAfter("go").trim()
+                    val destination = command.substringBefore("go").trim()
                     Log.d(TAG, "Destination after processing: $destination")
                     if (destination.isNotEmpty()) {
                         fragment.openGoogleMapsForDestination(destination)
@@ -29,10 +29,17 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                         fragment.sendBotMessage("You didn't specify your destination.")
                     }
                 }
-                command.contains("search", true) -> {
-                    val query = command.substringAfter("search").trim()
+                command.contains("ara", true) -> {
+                    val query = command.substringBefore("ara").trim()
                     Log.d(TAG, "Search query: $query")
-                    fragment.openGoogleMapsForSearch(query)
+                    if (query.isNotEmpty()) {
+                        fragment.openGoogleSearch(query)
+                    } else {
+                        fragment.sendBotMessage("Aramak istediğiniz yeri belirtmediniz.")
+                    }
+                }
+                else -> {
+                    fragment.sendBotMessage("Üzgünüm, komutunuzu anlayamadım.")
                 }
             }
         }, 1000) // 1 saniye gecikme

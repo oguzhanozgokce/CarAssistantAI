@@ -10,5 +10,9 @@
     <string name="send_message">Send message</string>
     <string name="microphone">microphone</string>
     <string name="GOOGLE_MAPS_API_KEY">AIzaSyBGhKZdJXpWbFmCyUAgeN6o9kbAnts0fDs</string>
+    <string name="start">Start</string>
+    <string name="assistant">Assistant</string>
+    <string name="ai_car">AI Car</string>
+    <string name="welcome">Welcome</string>
 
 </resources>
