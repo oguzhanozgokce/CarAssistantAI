@@ -1,10 +1,11 @@
 package com.oguzhanozgokce.carassistantai.ui.chat
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.oguzhanozgokce.carassistantai.R
@@ -24,6 +26,7 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.ContactUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.GoogleUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.MapUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.PhotoUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.YouTubeUtils
 import java.util.Locale
 
@@ -35,8 +38,6 @@ class ChatBotFragment : Fragment() {
 
 
     companion object {
-        private const val REQUEST_CODE_SPEECH_INPUT = 100
-        const val REQUEST_CODE_CONTACT_PERMISSIONS = 101
         const val TAG = "ChatBotFragment"
     }
 
@@ -47,7 +48,7 @@ class ChatBotFragment : Fragment() {
         if (allGranted) {
             // Handle the case where all permissions are granted
         } else {
-            sendBotMessage("Gerekli izinler verilmedi.")
+            sendBotMessage("Necessary authorisations were not granted")
         }
     }
 
@@ -62,6 +63,26 @@ class ChatBotFragment : Fragment() {
             }
         }
     }
+
+    private val requestStoragePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // İzin verildiğinde yapılacak işlemler
+        } else {
+            sendBotMessage("Gerekli izinler verilmedi.")
+        }
+    }
+
+    fun requestStoragePermission() {
+        val readPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            android.Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+        requestStoragePermissionsLauncher.launch(readPermission)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -175,6 +196,36 @@ class ChatBotFragment : Fragment() {
         ContactUtils.findContactAndSendMessage(this, contactName, message)
     }
 
+    fun getPhotosByDateRange(startDate: Long, endDate: Long) {
+        PhotoUtils.getPhotosByDateRange(this, startDate, endDate)
+    }
+
+    fun openGooglePhotos() {
+        PhotoUtils.openGooglePhotos(this)
+    }
+
+    fun openSpotify() {
+        val pm = requireContext().packageManager
+        try {
+            // Check if Spotify is installed
+            pm.getPackageInfo("com.spotify.music", PackageManager.GET_ACTIVITIES)
+
+            // Create an intent to launch Spotify
+            val intent = Intent(Intent.ACTION_MAIN).apply {
+                addCategory(Intent.CATEGORY_LAUNCHER)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                `package` = "com.spotify.music"
+            }
+
+            if (intent.resolveActivity(pm) != null) {
+                startActivity(intent)
+            } else {
+                sendBotMessage("Spotify uygulaması açılırken bir hata oluştu.")
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            sendBotMessage("Spotify uygulaması yüklü değil.")
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

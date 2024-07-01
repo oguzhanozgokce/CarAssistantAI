@@ -5,6 +5,9 @@ import android.os.Looper
 import android.util.Log
 import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
 import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment.Companion.TAG
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class CommandProcessor(private val fragment: ChatBotFragment) {
 
@@ -55,6 +58,28 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     } else {
                         fragment.sendBotMessage("Mesaj göndermek için yeterli bilgi vermediniz.")
                     }
+
+                }
+                command.contains("fotoğraflar", true) -> {
+                    val dateRegex = """\d{1,2} \w+ \d{4}""".toRegex()
+                    val matchResult = dateRegex.find(command)
+                    if (matchResult != null) {
+                        val dateStr = matchResult.value
+                        val sdf = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+                        val startDate = sdf.parse(dateStr)?.time ?: 0L
+                        val endDate = startDate + TimeUnit.DAYS.toMillis(1) - 1
+
+                        fragment.getPhotosByDateRange(startDate, endDate)
+                    } else {
+                        fragment.sendBotMessage("Belirtilen tarihe göre fotoğraflar bulunamadı.")
+                    }
+                }
+                command.contains("Photo", true) -> {
+                    fragment.openGooglePhotos()
+                }
+
+                command.contains("Spotify", true) -> {
+                    fragment.openSpotify()
                 }
                 else -> {
                     fragment.sendBotMessage("Sorry, I don't understand your command.")
