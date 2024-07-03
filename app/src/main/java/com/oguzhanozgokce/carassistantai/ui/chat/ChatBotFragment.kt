@@ -19,17 +19,20 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.gone
+import com.oguzhanozgokce.carassistantai.common.setupCardView
 import com.oguzhanozgokce.carassistantai.common.visible
 import com.oguzhanozgokce.carassistantai.data.model.Message
 import com.oguzhanozgokce.carassistantai.data.repo.OpenAiRepository
 import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
+import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognizerHelper
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.CameraUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.ContactUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.GoogleUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.MapUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.PhotoUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.SpotifyUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.YouTubeUtils
 import java.util.Locale
 
@@ -39,6 +42,7 @@ class ChatBotFragment : Fragment() {
     private val adapter by lazy { MessageAdapter() }
     private val commandProcessor by lazy { CommandProcessor(this) }
     private val viewModel: ChatBotViewModel by viewModels()
+    private lateinit var speechRecognizerHelper: SpeechRecognizerHelper
 
 
     companion object {
@@ -56,17 +60,6 @@ class ChatBotFragment : Fragment() {
         }
     }
 
-    private val speechRecognizerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == AppCompatActivity.RESULT_OK && result.data != null) {
-            result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.let { results ->
-                if (results.isNotEmpty()) {
-                    binding.editTextMessage.setText(results[0])
-                }
-            }
-        }
-    }
 
     private val requestStoragePermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -104,6 +97,12 @@ class ChatBotFragment : Fragment() {
         setupMicButton()
         setupCardViews()
 
+        speechRecognizerHelper = SpeechRecognizerHelper(this) { userMessage ->
+            sendMessage(Message(userMessage, false))
+            switchToChatMode()
+            commandProcessor.processCommand(userMessage)
+        }
+
 
         // Observe the chat response
         viewModel.chatResponse.observe(viewLifecycleOwner, Observer { result ->
@@ -127,24 +126,7 @@ class ChatBotFragment : Fragment() {
 
     private fun setupMicButton() {
         binding.buttonMic.setOnClickListener {
-            startVoiceInput()
-        }
-    }
-
-
-    private fun startVoiceInput() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-            )
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "Konuşun...")
-        }
-        try {
-            speechRecognizerLauncher.launch(intent)
-        } catch (e: Exception) {
-            e.printStackTrace()
+            speechRecognizerHelper.startVoiceInput()
         }
     }
 
@@ -161,18 +143,21 @@ class ChatBotFragment : Fragment() {
     }
 
     private fun setupCardViews() {
-        setupCardView(binding.cardView1, R.id.textViewQuestion1)
-        setupCardView(binding.cardView2, R.id.textViewQuestion2)
-        setupCardView(binding.cardView3, R.id.textViewQuestion3)
+        binding.cardView1.setupCardView(R.id.textViewQuestion1) { message ->
+            handleCardViewClick(message)
+        }
+        binding.cardView2.setupCardView(R.id.textViewQuestion2) { message ->
+            handleCardViewClick(message)
+        }
+        binding.cardView3.setupCardView(R.id.textViewQuestion3) { message ->
+            handleCardViewClick(message)
+        }
     }
 
-    private fun setupCardView(cardView: CardView, textViewId: Int) {
-        cardView.setOnClickListener {
-            val message = cardView.findViewById<TextView>(textViewId).text.toString()
-            sendMessage(Message(message, false))
-            switchToChatMode()
-            commandProcessor.processCommand(message)
-        }
+    private fun handleCardViewClick(message: String) {
+        sendMessage(Message(message, false))
+        switchToChatMode()
+        commandProcessor.processCommand(message)
     }
 
     private fun sendMessage(message: Message) {
@@ -223,25 +208,8 @@ class ChatBotFragment : Fragment() {
     }
 
     fun openSpotify() {
-        val pm = requireContext().packageManager
-        try {
-            // Check if Spotify is installed
-            pm.getPackageInfo("com.spotify.music", PackageManager.GET_ACTIVITIES)
-
-            // Create an intent to launch Spotify
-            val intent = Intent(Intent.ACTION_MAIN).apply {
-                addCategory(Intent.CATEGORY_LAUNCHER)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                `package` = "com.spotify.music"
-            }
-
-            if (intent.resolveActivity(pm) != null) {
-                startActivity(intent)
-            } else {
-                sendBotMessage("Spotify uygulaması açılırken bir hata oluştu.")
-            }
-        } catch (e: PackageManager.NameNotFoundException) {
-            sendBotMessage("Spotify uygulaması yüklü değil.")
+        SpotifyUtils.openSpotify(requireContext()) { errorMessage ->
+            sendBotMessage(errorMessage)
         }
     }
 
