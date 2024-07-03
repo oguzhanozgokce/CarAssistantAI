@@ -56,7 +56,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                         val message = parts.subList(2, parts.size).joinToString(" ")
                         fragment.findContactAndSendMessage(contactName, message)
                     } else {
-                        fragment.sendBotMessage("Mesaj göndermek için yeterli bilgi vermediniz.")
+                        fragment.sendBotMessage("You didn't give me enough information to send a message.")
                     }
 
                 }
@@ -71,7 +71,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
 
                         fragment.getPhotosByDateRange(startDate, endDate)
                     } else {
-                        fragment.sendBotMessage("Belirtilen tarihe göre fotoğraflar bulunamadı.")
+                        fragment.sendBotMessage("Photos were not found according to the specified date.")
                     }
                 }
                 command.contains("Photo", true) -> {

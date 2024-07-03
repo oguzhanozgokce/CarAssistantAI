@@ -3,7 +3,6 @@ package com.oguzhanozgokce.carassistantai.ui.chat.utils
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import com.oguzhanozgokce.carassistantai.data.model.Message
 
 object SpotifyUtils {
 
@@ -23,10 +22,10 @@ object SpotifyUtils {
             if (intent.resolveActivity(pm) != null) {
                 context.startActivity(intent)
             } else {
-                sendBotMessage("Spotify uygulaması açılırken bir hata oluştu.")
+                sendBotMessage("An error occurred while opening the Spotify app.")
             }
         } catch (e: PackageManager.NameNotFoundException) {
-            sendBotMessage("Spotify uygulaması yüklü değil.")
+            sendBotMessage("Spotify app not installed")
         }
     }
 }

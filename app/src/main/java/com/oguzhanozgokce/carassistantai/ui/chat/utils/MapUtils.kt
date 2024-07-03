@@ -27,7 +27,7 @@ object MapUtils {
         }
     }
 
-    //val gmmIntentUri = Uri.parse("google.navigation:q=$encodedDestination")  // rota oluşturur
-    //val gmmIntentUri = Uri.parse("geo:0,0?q=$encodedDestination") // konum gösterir
-    //val gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$encodedDestination") // web de yol tarifi
+    //val gmmIntentUri = Uri.parse("google.navigation:q=$encodedDestination")  // creates a route
+    //val gmmIntentUri = Uri.parse("geo:0,0?q=$encodedDestination") //  shows location
+    //val gmmIntentUri = Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$encodedDestination") // directions on the web
 }

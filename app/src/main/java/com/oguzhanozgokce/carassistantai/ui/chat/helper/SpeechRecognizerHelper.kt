@@ -9,7 +9,7 @@ import java.util.Locale
 
 // Ses Tanima Islemleri
 class SpeechRecognizerHelper(
-    private val fragment: Fragment,
+    fragment: Fragment,
     private val onResult: (String) -> Unit
 ) {
 

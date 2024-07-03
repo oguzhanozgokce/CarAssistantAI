@@ -1,28 +1,20 @@
 package com.oguzhanozgokce.carassistantai.ui.chat
 
-import android.content.Intent
-import android.content.pm.PackageManager
+
 import android.os.Build
 import android.os.Bundle
-import android.speech.RecognizerIntent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.setupCardView
 import com.oguzhanozgokce.carassistantai.common.visible
 import com.oguzhanozgokce.carassistantai.data.model.Message
-import com.oguzhanozgokce.carassistantai.data.repo.OpenAiRepository
 import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
 import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognizerHelper
@@ -34,7 +26,6 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.MapUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.PhotoUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.SpotifyUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.YouTubeUtils
-import java.util.Locale
 
 class ChatBotFragment : Fragment() {
     private var _binding: FragmentChatBotBinding? = null
@@ -65,9 +56,9 @@ class ChatBotFragment : Fragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // İzin verildiğinde yapılacak işlemler
+            // Actions to be taken when authorisation is granted
         } else {
-            sendBotMessage("Gerekli izinler verilmedi.")
+            sendBotMessage("The necessary permits were not granted.")
         }
     }
 
@@ -84,7 +75,7 @@ class ChatBotFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentChatBotBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -105,7 +96,7 @@ class ChatBotFragment : Fragment() {
 
 
         // Observe the chat response
-        viewModel.chatResponse.observe(viewLifecycleOwner, Observer { result ->
+        viewModel.chatResponse.observe(viewLifecycleOwner) { result ->
             result.fold(
                 onSuccess = { response ->
                     sendBotMessage(response)
@@ -114,7 +105,7 @@ class ChatBotFragment : Fragment() {
                     sendBotMessage(error.message ?: "An error occurred")
                 }
             )
-        })
+        }
     }
 
     private fun setupRecyclerView() {

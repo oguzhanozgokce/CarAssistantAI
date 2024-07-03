@@ -15,7 +15,7 @@ object CameraUtils {
         if (intent.resolveActivity(fragment.requireContext().packageManager) != null) {
             fragment.startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
         } else {
-            fragment.sendBotMessage("Kamera uygulaması bulunamadı.")
+            fragment.sendBotMessage("Camera application not found.")
         }
     }
 }

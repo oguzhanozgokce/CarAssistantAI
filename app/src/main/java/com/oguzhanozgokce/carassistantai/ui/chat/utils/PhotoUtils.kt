@@ -52,10 +52,8 @@ object PhotoUtils {
             while (it.moveToNext()) {
                 val id = it.getLong(idColumn)
                 val dateTaken = it.getLong(dateTakenColumn)
-                val contentUri =
-                    ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
 
-                // Fotoğrafı işlemek için contentUri'yi kullanabilirsiniz
                 Log.e(ChatBotFragment.TAG, "Found photo with ID: $id, taken on: $dateTaken")
             }
         }
@@ -69,7 +67,7 @@ object PhotoUtils {
         if (intent.resolveActivity(fragment.requireContext().packageManager) != null) {
             fragment.startActivity(intent)
         } else {
-            fragment.sendBotMessage("Google Fotoğraflar uygulaması yüklü değil.")
+            fragment.sendBotMessage("Google Photos app not installed.")
         }
     }
 

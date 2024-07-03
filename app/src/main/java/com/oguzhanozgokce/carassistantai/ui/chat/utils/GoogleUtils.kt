@@ -20,10 +20,10 @@ object GoogleUtils {
             context.startActivity(webIntent)
             Log.d(TAG, "Web intent started successfully")
         } catch (e: Exception) {
-            onFailure("Google Search uygulaması bulunamadı")
-            Log.e(TAG, "Google Search uygulaması bulunamadı", e)
+            onFailure("Google Search application not found")
+            Log.e(TAG, "Google Search application not found", e)
 
-            // Alternatif olarak kullanıcıya uyarı mesajı göstermek için bir dialog kullanabilirsiniz.
+            // Alternatively, you can use a dialogue to show a warning message to the user.
             val fallbackUri = Uri.parse("https://www.google.com/search?q=$encodedQuery")
             val fallbackIntent = Intent(Intent.ACTION_VIEW, fallbackUri)
             context.startActivity(fallbackIntent)
