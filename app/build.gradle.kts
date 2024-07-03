@@ -73,9 +73,12 @@ dependencies {
 
 
 
+
+
     implementation("com.google.api-client:google-api-client-android:1.32.1")
     implementation("com.google.apis:google-api-services-youtube:v3-rev222-1.25.0")
     implementation("com.google.http-client:google-http-client-gson:1.42.2")
+    implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
 
 
 }

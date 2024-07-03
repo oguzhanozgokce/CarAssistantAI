@@ -15,5 +15,6 @@
     <string name="ai_car">AI Car</string>
     <string name="welcome">Welcome</string>
     <string name="car_image">Car image</string>
+    <string name="GEMINI_API_KEY">AIzaSyBMwsij534VYo0Zi6YCvwUVdsMIh3ziRt0</string>
 
 </resources>

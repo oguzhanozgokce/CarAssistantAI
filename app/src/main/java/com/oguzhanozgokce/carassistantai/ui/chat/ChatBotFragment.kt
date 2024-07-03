@@ -2,7 +2,6 @@ package com.oguzhanozgokce.carassistantai.ui.chat
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
@@ -13,15 +12,19 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.visible
 import com.oguzhanozgokce.carassistantai.data.model.Message
+import com.oguzhanozgokce.carassistantai.data.repo.OpenAiRepository
 import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.CameraUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.ContactUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.GoogleUtils
@@ -35,6 +38,7 @@ class ChatBotFragment : Fragment() {
     private val binding get() = _binding!!
     private val adapter by lazy { MessageAdapter() }
     private val commandProcessor by lazy { CommandProcessor(this) }
+    private val viewModel: ChatBotViewModel by viewModels()
 
 
     companion object {
@@ -94,10 +98,24 @@ class ChatBotFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupRecyclerView()
         setupButtonSend()
         setupMicButton()
         setupCardViews()
+
+
+        // Observe the chat response
+        viewModel.chatResponse.observe(viewLifecycleOwner, Observer { result ->
+            result.fold(
+                onSuccess = { response ->
+                    sendBotMessage(response)
+                },
+                onFailure = { error ->
+                    sendBotMessage(error.message ?: "An error occurred")
+                }
+            )
+        })
     }
 
     private fun setupRecyclerView() {
@@ -225,6 +243,14 @@ class ChatBotFragment : Fragment() {
         } catch (e: PackageManager.NameNotFoundException) {
             sendBotMessage("Spotify uygulaması yüklü değil.")
         }
+    }
+
+    fun openCamera() {
+        CameraUtils.openCamera(this)
+    }
+
+    fun sendOpenAiRequest(userMessage: String) {
+        viewModel.sendMessage(userMessage)
     }
 
     override fun onDestroyView() {

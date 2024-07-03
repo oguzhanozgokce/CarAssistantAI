@@ -81,8 +81,12 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                 command.contains("Spotify", true) -> {
                     fragment.openSpotify()
                 }
+
+                command.contains("Kamera", true) -> {
+                    fragment.openCamera()
+                }
                 else -> {
-                    fragment.sendBotMessage("Sorry, I don't understand your command.")
+                    fragment.sendOpenAiRequest(command)
                 }
             }
         }, 1000) // 1 saniye gecikme
