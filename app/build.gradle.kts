@@ -80,5 +80,8 @@ dependencies {
     implementation("com.google.http-client:google-http-client-gson:1.42.2")
     implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
 
+    //lottie
+    implementation(libs.lottie)
+
 
 }

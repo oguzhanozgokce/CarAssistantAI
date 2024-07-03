@@ -3,7 +3,7 @@ package com.oguzhanozgokce.carassistantai.ui.chat.utils
 import android.content.Intent
 import android.net.Uri
 import androidx.fragment.app.Fragment
-import com.oguzhanozgokce.carassistantai.common.Constant.YouTube_API_KEY
+import com.oguzhanozgokce.carassistantai.common.Constant.YOUTUBE_API_KEY
 import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,7 @@ object YouTubeUtils {
     }
 
     private fun getFirstVideoId(query: String): String? {
-        val youtubeHelper = YouTubeHelper(YouTube_API_KEY)
+        val youtubeHelper = YouTubeHelper(YOUTUBE_API_KEY)
         val results = youtubeHelper.searchVideos(query)
         return results?.firstOrNull()?.id?.videoId
     }

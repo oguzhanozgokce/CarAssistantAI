@@ -17,14 +17,16 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
 
         Handler(Looper.getMainLooper()).postDelayed({
             when {
-                command.contains("YouTube", true) && command.contains("ac", true) -> {
-                    val query = command.substringAfter("YouTube").substringBefore(" ac").trim()
+                command.contains("YouTube", true) && Regex("\\b(aç|ac)\\b", RegexOption.IGNORE_CASE).containsMatchIn(command) -> {
+                    val regex = Regex("\\b(aç|ac)\\b", RegexOption.IGNORE_CASE)
+                    val query = command.substringAfter("YouTube").split(regex).first().trim()
                     Log.d(TAG, "YouTube query: $query")
                     fragment.searchAndOpenYouTube(query)
                 }
 
-                command.contains("go", true) -> {
-                    val destination = command.substringBefore("go").trim()
+                Regex("\\b(go|götür|yol tarifi)\\b", RegexOption.IGNORE_CASE).containsMatchIn(command) -> {
+                    val regex = Regex("\\b(go|götür|yol tarifi)\\b", RegexOption.IGNORE_CASE)
+                    val destination = command.split(regex).first().trim()
                     Log.d(TAG, "Destination after processing: $destination")
                     if (destination.isNotEmpty()) {
                         fragment.openGoogleMapsForDestination(destination)
@@ -58,7 +60,6 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     } else {
                         fragment.sendBotMessage("You didn't give me enough information to send a message.")
                     }
-
                 }
                 command.contains("fotoğraflar", true) -> {
                     val dateRegex = """\d{1,2} \w+ \d{4}""".toRegex()

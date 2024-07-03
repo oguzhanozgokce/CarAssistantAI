@@ -38,8 +38,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewWelcome" />
 
-
     <TextView
+        android:id="@+id/textViewAssistant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -53,18 +53,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
-    <ImageView
+    <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/imageViewCar"
         android:layout_width="wrap_content"
         android:layout_height="300dp"
-        android:contentDescription="@string/car_image"
-        android:padding="16dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/car_splash1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:lottie_rawRes="@raw/assistant_animation"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAssistant"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonStart"
@@ -79,6 +78,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewCar" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
