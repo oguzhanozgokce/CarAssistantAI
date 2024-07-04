@@ -46,7 +46,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                 command.startsWith("Rehberden") && command.contains("ara", true) -> {       // Rehberden , name , ara
                     val contactName = command.substringAfter("Rehberden").substringBefore("ara").trim()
                     if (contactName.isNotEmpty()) {
-                        ContactUtils.findContactAndCall(fragment, contactName)
+                        fragment.findContactAndCall(contactName)
                     } else {
                         fragment.sendBotMessage("You didn't specify who you wanted to call.")
                     }

@@ -30,6 +30,7 @@
         app:itemIconTint="@color/black"
         app:itemTextColor="@color/black"
         app:menu="@menu/menu"
+        android:visibility="gone"
         android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
