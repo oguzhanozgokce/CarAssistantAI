@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         if (Settings.canDrawOverlays(this)) {
             startFloatingIconService()
         } else {
-            Log.d(TAG, "SYSTEM_ALERT_WINDOW izni verilmedi.")
+            Log.e(TAG, "SYSTEM_ALERT_WINDOW izni verilmedi.")
         }
     }
 

@@ -109,6 +109,26 @@ class ChatBotFragment : Fragment() {
             )
         }
 
+        viewModel.messages.observe(viewLifecycleOwner) { messages ->
+            adapter.setMessages(messages)
+            binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
+        }
+
+        viewModel.isChatMode.observe(viewLifecycleOwner) { isChatMode ->
+            if (isChatMode) {
+                switchToChatMode()
+            } else {
+                showCardViews()
+            }
+        }
+
+
+
+        if (savedInstanceState == null) {
+            sendMessage(Message("Welcome!", true))
+            sendMessage(Message("How can I help you?", true))
+        }
+
     }
 
     private fun setupRecyclerView() {
@@ -156,13 +176,13 @@ class ChatBotFragment : Fragment() {
     }
 
     private fun sendMessage(message: Message) {
-        adapter.addMessage(message)
+        viewModel.addMessage(message)
         binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
     fun sendBotMessage(message: String) {
         val botMessage = Message(message, true)
-        adapter.addMessage(botMessage)
+        viewModel.addMessage(botMessage)
         binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
@@ -170,6 +190,12 @@ class ChatBotFragment : Fragment() {
         binding.questionLayout.gone()
         binding.recyclerView.visible()
     }
+
+    private fun showCardViews() {
+        binding.questionLayout.visible()
+        binding.recyclerView.gone()
+    }
+
 
     fun openGoogleSearch(query: String) {
         GoogleUtils.openGoogleSearch(requireContext(), query) { errorMessage ->

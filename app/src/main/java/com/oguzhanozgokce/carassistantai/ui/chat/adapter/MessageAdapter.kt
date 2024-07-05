@@ -47,6 +47,12 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyItemInserted(messages.size - 1)
     }
 
+    fun setMessages(newMessages: List<Message>) {
+        messages.clear()
+        messages.addAll(newMessages)
+        notifyDataSetChanged()
+    }
+
     inner class UserMessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.textUserMessage.text = message.content
@@ -59,3 +65,4 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 }
+

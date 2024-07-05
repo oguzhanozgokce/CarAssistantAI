@@ -1,11 +1,15 @@
 package com.oguzhanozgokce.carassistantai.ui.chat
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.IBinder
 import android.view.*
+import androidx.core.app.NotificationCompat
 import com.oguzhanozgokce.carassistantai.MainActivity
 import com.oguzhanozgokce.carassistantai.R
 
@@ -20,6 +24,7 @@ class FloatingIconService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        startForegroundService()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         floatingView = LayoutInflater.from(this).inflate(R.layout.floating_icon, null)
@@ -95,5 +100,25 @@ class FloatingIconService : Service() {
         if (::floatingView.isInitialized) {
             windowManager.removeView(floatingView)
         }
+    }
+
+    private fun startForegroundService() {
+        val notificationChannelId = "FOREGROUND_SERVICE_CHANNEL"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                notificationChannelId,
+                "Foreground Service Channel",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(this, notificationChannelId)
+            .setContentTitle("Floating Icon Service")
+            .setContentText("Service is running")
+            .setSmallIcon(R.drawable.chat_gpt_icon)
+            .build()
+
+        startForeground(1, notification)
     }
 }
