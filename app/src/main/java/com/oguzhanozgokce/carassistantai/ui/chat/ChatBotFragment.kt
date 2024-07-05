@@ -1,6 +1,5 @@
 package com.oguzhanozgokce.carassistantai.ui.chat
 
-
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,10 +17,12 @@ import com.oguzhanozgokce.carassistantai.data.model.Message
 import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
 import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognizerHelper
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.CameraUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.ContactUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.GoogleUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.InstagramUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.MapUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.PhotoUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.SpotifyUtils
@@ -51,7 +52,6 @@ class ChatBotFragment : Fragment() {
         }
     }
 
-
     private val requestStoragePermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -61,6 +61,8 @@ class ChatBotFragment : Fragment() {
             sendBotMessage("The necessary permits were not granted.")
         }
     }
+
+
 
     fun requestStoragePermission() {
         val readPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -106,6 +108,7 @@ class ChatBotFragment : Fragment() {
                 }
             )
         }
+
     }
 
     private fun setupRecyclerView() {
@@ -132,6 +135,7 @@ class ChatBotFragment : Fragment() {
             }
         }
     }
+
 
     private fun setupCardViews() {
         binding.cardView1.setupCardView(R.id.textViewQuestion1) { message ->
@@ -204,12 +208,34 @@ class ChatBotFragment : Fragment() {
         }
     }
 
+    fun searchSpotify(query: String) {
+        SpotifyUtils.searchSpotify(requireContext(), query) { errorMessage ->
+            sendBotMessage(errorMessage)
+        }
+    }
+
+    fun openInstagram() {
+        InstagramUtils.openInstagram(requireContext()) { errorMessage ->
+            sendBotMessage(errorMessage)
+        }
+    }
+    fun openInstagramProfile(username: String) {
+        InstagramUtils.openInstagramProfile(requireContext(), username) { errorMessage ->
+            sendBotMessage(errorMessage)
+        }
+    }
+
     fun openCamera() {
         CameraUtils.openCamera(this)
     }
 
     fun sendOpenAiRequest(userMessage: String) {
         viewModel.sendMessage(userMessage)
+    }
+
+    fun setAlarm(hour: Int, minute: Int, message: String) {
+        AlarmUtils.setAlarm(requireContext(), hour, minute, message)
+
     }
 
     override fun onDestroyView() {

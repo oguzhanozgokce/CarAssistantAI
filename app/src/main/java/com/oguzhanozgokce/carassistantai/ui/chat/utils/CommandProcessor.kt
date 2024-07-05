@@ -5,6 +5,8 @@ import android.os.Looper
 import android.util.Log
 import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
 import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment.Companion.TAG
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.TimeUtils
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -83,8 +85,38 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     fragment.openSpotify()
                 }
 
+                command.contains("Spotify", true) && command.contains("ara", true) -> {
+                    val query = command.substringAfter("ara").trim()
+                    fragment.searchSpotify(query)
+                }
+
                 command.contains("Kamera", true) -> {
                     fragment.openCamera()
+                }
+                command.contains("instagram", true) -> {
+                    fragment.openInstagram()
+                }
+                command.contains("Instagram", true) && command.contains("profile", true) -> {
+                    val parts = command.split("profile", ignoreCase = true, limit = 2)
+                    if (parts.size > 1) {
+                        val username = parts[1].trim()
+                        Log.d(TAG, "Instagram profile: $username")
+                        fragment.openInstagramProfile(username)
+                    } else {
+                        fragment.sendBotMessage("You didn't specify the Instagram profile.")
+                    }
+                }
+                command.contains("alarm", true) -> {
+                    val time = TimeUtils.extractTimeFromCommand(command)
+                    if (time != null) {
+                        fragment.setAlarm(time.first, time.second, "Time to wake up!")
+                        fragment.sendBotMessage("Alarm set for ${time.first}:${time.second}")
+                    } else {
+                        fragment.sendBotMessage("Could not understand the alarm time.")
+                    }
+                }
+                command.contains("Saat", true) -> {
+                    AlarmUtils.showAlarms(fragment.requireContext())
                 }
                 else -> {
                     fragment.sendOpenAiRequest(command)
