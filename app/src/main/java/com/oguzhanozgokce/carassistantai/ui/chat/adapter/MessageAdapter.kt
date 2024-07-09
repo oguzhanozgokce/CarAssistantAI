@@ -1,8 +1,10 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.data.model.Message
 import com.oguzhanozgokce.carassistantai.databinding.ItemBotMessageBinding
 import com.oguzhanozgokce.carassistantai.databinding.ItemMessageBinding
@@ -14,29 +16,42 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val VIEW_TYPE_USER = 1
         private const val VIEW_TYPE_BOT = 2
+        private const val VIEW_TYPE_LOADING = 3
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (messages[position].isBotMessage) VIEW_TYPE_BOT else VIEW_TYPE_USER
+        return when {
+            messages[position].isLoading -> VIEW_TYPE_LOADING
+            messages[position].isBotMessage -> VIEW_TYPE_BOT
+            else -> VIEW_TYPE_USER
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return if (viewType == VIEW_TYPE_USER) {
-            val binding = ItemMessageBinding.inflate(inflater, parent, false)
-            UserMessageViewHolder(binding)
-        } else {
-            val binding = ItemBotMessageBinding.inflate(inflater, parent, false)
-            BotMessageViewHolder(binding)
+        return when (viewType) {
+            VIEW_TYPE_USER -> {
+                val binding = ItemMessageBinding.inflate(inflater, parent, false)
+                UserMessageViewHolder(binding)
+            }
+            VIEW_TYPE_BOT -> {
+                val binding = ItemBotMessageBinding.inflate(inflater, parent, false)
+                BotMessageViewHolder(binding)
+            }
+            VIEW_TYPE_LOADING -> {
+                val view = inflater.inflate(R.layout.item_loading_message, parent, false)
+                LoadingViewHolder(view)
+            }
+            else -> throw IllegalArgumentException("Invalid view type")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val message = messages[position]
-        if (holder is UserMessageViewHolder) {
-            holder.bind(message)
-        } else if (holder is BotMessageViewHolder) {
-            holder.bind(message)
+        when (holder) {
+            is UserMessageViewHolder -> holder.bind(message)
+            is BotMessageViewHolder -> holder.bind(message)
+            is LoadingViewHolder -> holder.bind(message)
         }
     }
 
@@ -53,6 +68,14 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun removeLoadingMessage() {
+        val index = messages.indexOfFirst { it.isLoading }
+        if (index != -1) {
+            messages.removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
+
     inner class UserMessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.textUserMessage.text = message.content
@@ -64,5 +87,12 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.textBotMessage.text = message.content
         }
     }
+
+    inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(message: Message) {
+            // Animasyon zaten otomatik oynuyor, başka bir şey yapmaya gerek yok
+        }
+    }
 }
+
 

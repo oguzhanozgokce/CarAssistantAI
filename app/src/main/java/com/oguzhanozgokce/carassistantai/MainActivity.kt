@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        listInstalledPackages()
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -43,14 +42,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun listInstalledPackages() {
-        val pm: PackageManager = packageManager
-        val packages = pm.getInstalledPackages(0)
-        for (packageInfo in packages) {
-            Log.d(TAG, "Installed package: ${packageInfo.packageName}")
-        }
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
@@ -58,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 }
 
 // Client ID = 149427396719-mlus9cqi2ena532dm5g2soo6rkofc4b4.apps.googleusercontent.com
-// gemini api key = AIzaSyBMwsij534VYo0Zi6YCvwUVdsMIh3ziRt0
-// keytool -keystore path-to-debug-or-production-keystore -list -v
+
 
 //AIzaSyCmDkEwxItRh7m-mSucXSVc8Cxt3Saq4CA

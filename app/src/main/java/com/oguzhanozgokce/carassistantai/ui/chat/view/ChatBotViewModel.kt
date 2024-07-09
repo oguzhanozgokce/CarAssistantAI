@@ -5,16 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.oguzhanozgokce.carassistantai.data.model.Message
 
-class ChatBotViewModel() : ViewModel() {
-
+class ChatBotViewModel : ViewModel() {
     private val _messages = MutableLiveData<MutableList<Message>>(mutableListOf())
     val messages: LiveData<MutableList<Message>> = _messages
 
     private val _isChatMode = MutableLiveData<Boolean>(false)
     val isChatMode: LiveData<Boolean> = _isChatMode
-
-
-
 
     fun addMessage(message: Message) {
         _messages.value?.add(message)
@@ -28,5 +24,10 @@ class ChatBotViewModel() : ViewModel() {
 
     fun setChatMode(isChatMode: Boolean) {
         _isChatMode.value = isChatMode
+    }
+
+    fun removeLoadingMessage() {
+        _messages.value = _messages.value?.filterNot { it.isLoading }?.toMutableList()
+        _messages.value = _messages.value
     }
 }

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 class CommandProcessor(private val fragment: ChatBotFragment) {
 
     fun processCommand(command: String) {
-        fragment.sendBotMessage("...")
+        fragment.showLoadingAnimation()
         Log.d(TAG, "Received command: $command")
 
         Handler(Looper.getMainLooper()).postDelayed({

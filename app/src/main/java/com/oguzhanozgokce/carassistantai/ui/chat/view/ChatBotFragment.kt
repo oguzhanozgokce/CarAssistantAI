@@ -191,15 +191,31 @@ class ChatBotFragment : Fragment() {
         binding.recyclerView.gone()
     }
 
+     fun showLoadingAnimation() {
+        val loadingMessage = Message("", isBotMessage = true, isLoading = true)
+        viewModel.addMessage(loadingMessage)
+        binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
+    }
+
+    private fun hideLoadingAnimation() {
+        viewModel.removeLoadingMessage()
+    }
+
      fun sendGeminiResponse(prompt: String) {
         val generativeModel = GenerativeModel(
             modelName = "gemini-1.5-flash",
             apiKey = GEMINI_API_KEY // ENTER YOUR KEY
         )
-        runBlocking {
-            val response = generativeModel.generateContent(prompt)
-            sendBotMessage(response.text.toString())
-        }
+         runBlocking {
+             try {
+                 val response = generativeModel.generateContent(prompt)
+                 hideLoadingAnimation()
+                 sendBotMessage(response.text.toString())
+             } catch (e: Exception) {
+                 hideLoadingAnimation()
+                 sendBotMessage("An error occurred: ${e.message}")
+             }
+         }
     }
 
     fun openGoogleSearch(query: String) {
