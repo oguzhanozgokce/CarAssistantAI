@@ -108,7 +108,6 @@ class ChatBotFragment : Fragment() {
         setupRecyclerView()
         setupButtonSend()
         setupMicButton()
-        setupCardViews()
     }
 
     private fun observeViewModel() {
@@ -152,24 +151,6 @@ class ChatBotFragment : Fragment() {
     }
 
 
-    private fun setupCardViews() {
-        binding.cardView1.setupCardView(R.id.textViewQuestion1) { message ->
-            handleCardViewClick(message)
-        }
-        binding.cardView2.setupCardView(R.id.textViewQuestion2) { message ->
-            handleCardViewClick(message)
-        }
-        binding.cardView3.setupCardView(R.id.textViewQuestion3) { message ->
-            handleCardViewClick(message)
-        }
-    }
-
-    private fun handleCardViewClick(message: String) {
-        sendMessage(Message(message, false))
-        switchToChatMode()
-        commandProcessor.processCommand(message)
-    }
-
     private fun sendMessage(message: Message) {
         viewModel.addMessage(message)
         binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
@@ -182,12 +163,10 @@ class ChatBotFragment : Fragment() {
     }
 
     private fun switchToChatMode() {
-        binding.questionLayout.gone()
         binding.recyclerView.visible()
     }
 
     private fun showCardViews() {
-        binding.questionLayout.visible()
         binding.recyclerView.gone()
     }
 
