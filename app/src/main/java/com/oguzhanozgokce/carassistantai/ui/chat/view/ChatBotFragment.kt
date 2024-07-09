@@ -197,14 +197,14 @@ class ChatBotFragment : Fragment() {
         binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
-    private fun hideLoadingAnimation() {
+     fun hideLoadingAnimation() {
         viewModel.removeLoadingMessage()
     }
 
      fun sendGeminiResponse(prompt: String) {
         val generativeModel = GenerativeModel(
             modelName = "gemini-1.5-flash",
-            apiKey = GEMINI_API_KEY // ENTER YOUR KEY
+            apiKey = GEMINI_API_KEY
         )
          runBlocking {
              try {

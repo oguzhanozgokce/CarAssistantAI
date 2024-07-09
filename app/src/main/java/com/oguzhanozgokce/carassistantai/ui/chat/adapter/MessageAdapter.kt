@@ -68,13 +68,6 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-    fun removeLoadingMessage() {
-        val index = messages.indexOfFirst { it.isLoading }
-        if (index != -1) {
-            messages.removeAt(index)
-            notifyItemRemoved(index)
-        }
-    }
 
     inner class UserMessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
