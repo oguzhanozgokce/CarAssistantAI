@@ -1,8 +1,6 @@
 package com.oguzhanozgokce.carassistantai
 
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -14,25 +12,12 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.oguzhanozgokce.carassistantai.databinding.ActivityMainBinding
-import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment.Companion.TAG
-import android.provider.Settings
-import androidx.activity.result.contract.ActivityResultContracts
-import com.oguzhanozgokce.carassistantai.ui.chat.FloatingIconService
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment.Companion.TAG
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-
-    private val requestOverlayPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (Settings.canDrawOverlays(this)) {
-            startFloatingIconService()
-        } else {
-            Log.e(TAG, "SYSTEM_ALERT_WINDOW izni verilmedi.")
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.bottomNavView
         navView.setupWithNavController(navController)
 
-        checkOverlayPermissionAndStartService()
+
     }
 
     private fun listInstalledPackages() {
@@ -70,22 +55,6 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
-    private fun checkOverlayPermissionAndStartService() {
-        if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            )
-            requestOverlayPermissionLauncher.launch(intent)
-        } else {
-            startFloatingIconService()
-        }
-    }
-
-    private fun startFloatingIconService() {
-        val intent = Intent(this, FloatingIconService::class.java)
-        startService(intent)
-    }
 }
 
 // Client ID = 149427396719-mlus9cqi2ena532dm5g2soo6rkofc4b4.apps.googleusercontent.com
