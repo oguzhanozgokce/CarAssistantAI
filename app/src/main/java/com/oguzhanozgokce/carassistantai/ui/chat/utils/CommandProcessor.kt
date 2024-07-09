@@ -3,8 +3,8 @@ package com.oguzhanozgokce.carassistantai.ui.chat.utils
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
-import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment.Companion.TAG
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment.Companion.TAG
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.TimeUtils
 import java.text.SimpleDateFormat
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 class CommandProcessor(private val fragment: ChatBotFragment) {
 
     fun processCommand(command: String) {
-        fragment.sendBotMessage("Yes sir, your request is being fulfilled...")
+        fragment.sendBotMessage("...")
         Log.d(TAG, "Received command: $command")
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -118,8 +118,11 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                 command.contains("Saat", true) -> {
                     AlarmUtils.showAlarms(fragment.requireContext())
                 }
+                command.contains("mail", true) -> {
+                    fragment.openMailApp()
+                }
                 else -> {
-                    fragment.sendOpenAiRequest(command)
+                    fragment.sendGeminiResponse(command)
                 }
             }
         }, 1000) // 1 saniye gecikme

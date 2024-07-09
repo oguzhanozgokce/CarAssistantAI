@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/chatBotFragment"
-        android:name="com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment"
+        android:name="com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment"
         android:label="fragment_chat_bot"
         tools:layout="@layout/fragment_chat_bot" />
     <fragment

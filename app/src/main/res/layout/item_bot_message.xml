@@ -9,7 +9,7 @@
         android:id="@+id/textBotMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/message_background"
+        android:background="@drawable/bot_message_background"
         android:padding="10dp"
         android:textColor="@android:color/black" />
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.ui.chat.utils
+package com.oguzhanozgokce.carassistantai.ui.chat.utils.contact
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -6,7 +6,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
-import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 
 object ContactUtils {
 

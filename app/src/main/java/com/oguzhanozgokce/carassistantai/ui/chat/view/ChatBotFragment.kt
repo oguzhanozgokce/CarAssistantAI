@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.ui.chat
+package com.oguzhanozgokce.carassistantai.ui.chat.view
 
 import android.os.Build
 import android.os.Bundle
@@ -9,7 +9,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.ai.client.generativeai.GenerativeModel
 import com.oguzhanozgokce.carassistantai.R
+import com.oguzhanozgokce.carassistantai.common.Constant.GEMINI_API_KEY
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.setupCardView
 import com.oguzhanozgokce.carassistantai.common.visible
@@ -18,15 +20,17 @@ import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
 import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognizerHelper
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.CameraUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.camera.CameraUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.ContactUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.GoogleUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.InstagramUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.MapUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.PhotoUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.SpotifyUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.YouTubeUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.contact.ContactUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.google.GoogleUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.instagram.InstagramUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.mail.MailUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.map.MapUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.photo.PhotoUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.spotify.SpotifyUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.youtube.YouTubeUtils
+import kotlinx.coroutines.runBlocking
 
 class ChatBotFragment : Fragment() {
     private var _binding: FragmentChatBotBinding? = null
@@ -63,7 +67,6 @@ class ChatBotFragment : Fragment() {
     }
 
 
-
     fun requestStoragePermission() {
         val readPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             android.Manifest.permission.READ_MEDIA_IMAGES
@@ -85,30 +88,30 @@ class ChatBotFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupUI()
+        observeViewModel()
+
+        speechRecognizerHelper = SpeechRecognizerHelper(this) { userMessage ->
+            sendMessage(Message(userMessage, false))
+            commandProcessor.processCommand(userMessage)
+            //sendGeminiResponse(userMessage)
+        }
+
+        if (savedInstanceState == null) {
+            viewModel.setChatMode(false)
+            sendMessage(Message("Welcome!", true))
+            sendMessage(Message("How can I help you?", true))
+        }
+    }
+
+    private fun setupUI() {
         setupRecyclerView()
         setupButtonSend()
         setupMicButton()
         setupCardViews()
+    }
 
-        speechRecognizerHelper = SpeechRecognizerHelper(this) { userMessage ->
-            sendMessage(Message(userMessage, false))
-            switchToChatMode()
-            commandProcessor.processCommand(userMessage)
-        }
-
-
-        // Observe the chat response
-        viewModel.chatResponse.observe(viewLifecycleOwner) { result ->
-            result.fold(
-                onSuccess = { response ->
-                    sendBotMessage(response)
-                },
-                onFailure = { error ->
-                    sendBotMessage(error.message ?: "An error occurred")
-                }
-            )
-        }
-
+    private fun observeViewModel() {
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
             adapter.setMessages(messages)
             binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
@@ -121,14 +124,6 @@ class ChatBotFragment : Fragment() {
                 showCardViews()
             }
         }
-
-
-
-        if (savedInstanceState == null) {
-            sendMessage(Message("Welcome!", true))
-            sendMessage(Message("How can I help you?", true))
-        }
-
     }
 
     private fun setupRecyclerView() {
@@ -196,6 +191,16 @@ class ChatBotFragment : Fragment() {
         binding.recyclerView.gone()
     }
 
+     fun sendGeminiResponse(prompt: String) {
+        val generativeModel = GenerativeModel(
+            modelName = "gemini-1.5-flash",
+            apiKey = GEMINI_API_KEY // ENTER YOUR KEY
+        )
+        runBlocking {
+            val response = generativeModel.generateContent(prompt)
+            sendBotMessage(response.text.toString())
+        }
+    }
 
     fun openGoogleSearch(query: String) {
         GoogleUtils.openGoogleSearch(requireContext(), query) { errorMessage ->
@@ -245,6 +250,7 @@ class ChatBotFragment : Fragment() {
             sendBotMessage(errorMessage)
         }
     }
+
     fun openInstagramProfile(username: String) {
         InstagramUtils.openInstagramProfile(requireContext(), username) { errorMessage ->
             sendBotMessage(errorMessage)
@@ -255,14 +261,18 @@ class ChatBotFragment : Fragment() {
         CameraUtils.openCamera(this)
     }
 
-    fun sendOpenAiRequest(userMessage: String) {
-        viewModel.sendMessage(userMessage)
-    }
 
     fun setAlarm(hour: Int, minute: Int, message: String) {
         AlarmUtils.setAlarm(requireContext(), hour, minute, message)
 
     }
+
+    fun openMailApp() {
+        MailUtils.openMailApp(requireContext()) { message ->
+            sendBotMessage(message)
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -1,10 +1,10 @@
-package com.oguzhanozgokce.carassistantai.ui.chat.utils
+package com.oguzhanozgokce.carassistantai.ui.chat.utils.camera
 
 
 
 import android.content.Intent
 import android.provider.MediaStore
-import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 
 object CameraUtils {
 
