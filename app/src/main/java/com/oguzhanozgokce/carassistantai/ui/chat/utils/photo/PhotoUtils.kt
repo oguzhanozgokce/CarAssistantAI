@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.ui.chat.utils
+package com.oguzhanozgokce.carassistantai.ui.chat.utils.photo
 
 import android.content.ContentUris
 import android.content.Intent
@@ -8,7 +8,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat
-import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 
 object PhotoUtils {
 

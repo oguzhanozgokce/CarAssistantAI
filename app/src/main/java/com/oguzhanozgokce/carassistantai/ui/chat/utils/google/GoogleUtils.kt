@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.ui.chat.utils
+package com.oguzhanozgokce.carassistantai.ui.chat.utils.google
 
 import android.content.Context
 import android.content.Intent

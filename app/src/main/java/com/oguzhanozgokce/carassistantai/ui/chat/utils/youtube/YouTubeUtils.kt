@@ -1,10 +1,10 @@
-package com.oguzhanozgokce.carassistantai.ui.chat.utils
+package com.oguzhanozgokce.carassistantai.ui.chat.utils.youtube
 
 import android.content.Intent
 import android.net.Uri
 import androidx.fragment.app.Fragment
 import com.oguzhanozgokce.carassistantai.common.Constant.YOUTUBE_API_KEY
-import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

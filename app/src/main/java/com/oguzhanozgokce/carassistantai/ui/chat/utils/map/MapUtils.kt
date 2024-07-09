@@ -1,10 +1,10 @@
-package com.oguzhanozgokce.carassistantai.ui.chat.utils
+package com.oguzhanozgokce.carassistantai.ui.chat.utils.map
 
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.fragment.app.Fragment
-import com.oguzhanozgokce.carassistantai.ui.chat.ChatBotFragment
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 
 object MapUtils {
 
