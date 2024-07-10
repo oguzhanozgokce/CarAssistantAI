@@ -1,7 +1,10 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.view
 
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -102,6 +105,19 @@ class ChatBotFragment : Fragment() {
             sendMessage(Message("Welcome!", true))
             sendMessage(Message("How can I help you?", true))
         }
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
+            val rect = Rect()
+            binding.root.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = binding.root.height
+            val keypadHeight = screenHeight - rect.bottom
+
+            if (keypadHeight > screenHeight * 0.15) { // Klavye açıldı
+                binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
+            } else {
+
+            }
+        }
+
     }
 
     private fun setupUI() {
@@ -149,6 +165,7 @@ class ChatBotFragment : Fragment() {
             }
         }
     }
+
 
 
     private fun sendMessage(message: Message) {

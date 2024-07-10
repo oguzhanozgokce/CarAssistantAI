@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:padding="10dp"
+    android:background="@color/background_color"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.chat.view.ChatBotFragment">
 
@@ -16,25 +17,28 @@
         android:padding="16dp"
         android:fontFamily="@font/cookie_crisp"
         android:gravity="center_horizontal"
-        android:background="@color/white"
-        android:textColor="@color/background_color"
+        android:background="@color/background_color"
+        android:textColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="16dp"
-        android:visibility="gone"
-        tools:listitem="@layout/item_message"
         app:layout_constraintTop_toBottomOf="@id/textViewTitle"
         app:layout_constraintBottom_toTopOf="@id/messageInputLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            tools:listitem="@layout/item_message" />
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:id="@+id/messageInputLayout"
@@ -43,7 +47,8 @@
         android:orientation="horizontal"
         android:padding="8dp"
         android:gravity="center_vertical"
-        android:background="@color/text_color"
+        android:layout_marginBottom="16dp"
+        android:background="@color/background_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -52,7 +57,6 @@
             android:id="@+id/editTextMessage"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:autofillHints="Type a message"
             android:hint="@string/type_a_message"
@@ -70,7 +74,7 @@
             android:background="@drawable/round_button_background"
             android:contentDescription="@string/send_message"
             android:padding="10dp"
-            android:src="@drawable/icon_send_24"
+            android:src="@drawable/svg_send"
             android:layout_marginStart="4dp" />
 
         <ImageView
@@ -80,7 +84,7 @@
             android:background="@drawable/round_button_mic_background"
             android:contentDescription="@string/microphone"
             android:padding="10dp"
-            android:src="@drawable/icon_mic"
+            android:src="@drawable/svg_mic"
             android:layout_marginStart="4dp" />
     </LinearLayout>
 

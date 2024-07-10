@@ -17,6 +17,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
         fragment.showLoadingAnimation()
         Log.d(TAG, "Received command: $command")
 
+
         Handler(Looper.getMainLooper()).postDelayed({
             try {
                 handleCommand(command)

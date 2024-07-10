@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_color"
     tools:context=".ui.splash.SplashFragment">
 
     <TextView
@@ -15,7 +15,7 @@
         android:fontFamily="@font/cookie_crisp"
         android:gravity="center_horizontal"
         android:text="@string/welcome"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,7 +31,7 @@
         android:fontFamily="@font/cookie_crisp"
         android:gravity="center_horizontal"
         android:text="@string/ai_car"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
         android:fontFamily="@font/cookie_crisp"
         android:gravity="center_horizontal"
         android:text="@string/assistant"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white">
+    android:background="@color/background_color">
 
     <TextView
         android:id="@+id/textViewWelcome"
@@ -14,7 +14,7 @@
         android:fontFamily="@font/cookie_crisp"
         android:gravity="center_horizontal"
         android:text="@string/welcome"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="45sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +28,7 @@
         android:fontFamily="@font/cookie_crisp"
         android:gravity="center_horizontal"
         android:text="@string/ai_car"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="45sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/textViewWelcome"
@@ -43,7 +43,7 @@
         android:fontFamily="@font/cookie_crisp"
         android:gravity="center_horizontal"
         android:text="@string/assistant"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="45sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/textViewTitle"
