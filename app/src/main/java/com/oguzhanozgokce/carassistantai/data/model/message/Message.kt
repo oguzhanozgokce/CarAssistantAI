@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.data.model
+package com.oguzhanozgokce.carassistantai.data.model.message
 
 data class Message(
     val content: String,

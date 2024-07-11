@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.oguzhanozgokce.carassistantai.R
-import com.oguzhanozgokce.carassistantai.data.model.Message
+import com.oguzhanozgokce.carassistantai.data.model.message.Message
 import com.oguzhanozgokce.carassistantai.databinding.ItemBotMessageBinding
 import com.oguzhanozgokce.carassistantai.databinding.ItemMessageBinding
 

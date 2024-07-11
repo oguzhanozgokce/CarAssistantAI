@@ -1,7 +1,7 @@
 [versions]
 agp = "8.5.0"
 databindingRuntime = "8.5.0"
-generativeaiVersion = "0.6.0"
+generativeaiVersion = "0.9.0"
 googleApiClientAndroid = "1.32.1"
 googleApiServicesYoutube = "v3-rev222-1.25.0"
 googleHttpClientGson = "1.42.2"
@@ -11,7 +11,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
-lifecycleViewmodelKtx = "2.8.2"
+lifecycleViewmodelKtx = "2.8.3"
 material = "1.12.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
@@ -22,10 +22,11 @@ retrofit_gson = "2.9.0"
 okhttp = "4.11.0"
 navigation = "2.7.7"
 kotlinGradlePlugin = "1.9.0"
-generativeai = "0.8.0"
+generativeai = "0.9.0"
 maps = "19.0.0"
 location = "21.3.0"
 lottie = "4.1.0"
+gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,7 +56,7 @@ generativeai = { group = "com.google.ai.client.generativeai", name = "generative
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "maps" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "location" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
-
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 
 [plugins]
