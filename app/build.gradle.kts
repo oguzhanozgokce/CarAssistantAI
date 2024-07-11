@@ -80,6 +80,9 @@ dependencies {
     implementation(libs.google.http.client.gson)
     implementation(libs.generativeai.v060)
 
+    //json
+    implementation(libs.gson)
+
 
 
 

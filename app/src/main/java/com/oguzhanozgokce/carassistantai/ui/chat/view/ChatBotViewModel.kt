@@ -3,7 +3,7 @@ package com.oguzhanozgokce.carassistantai.ui.chat.view
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.oguzhanozgokce.carassistantai.data.model.Message
+import com.oguzhanozgokce.carassistantai.data.model.message.Message
 
 class ChatBotViewModel : ViewModel() {
     private val _messages = MutableLiveData<MutableList<Message>>(mutableListOf())
