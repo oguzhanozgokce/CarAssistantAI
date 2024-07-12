@@ -12,9 +12,3 @@ fun View.gone() {
     visibility = View.GONE
 }
 
-fun CardView.setupCardView(textViewId: Int, onClick: (String) -> Unit) {
-    setOnClickListener {
-        val message = findViewById<TextView>(textViewId).text.toString()
-        onClick(message)
-    }
-}
