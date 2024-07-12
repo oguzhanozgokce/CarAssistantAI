@@ -1,18 +1,20 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.view
 
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
+import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.Constant.GEMINI_API_KEY
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.visible
@@ -24,14 +26,16 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.camera.CameraUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.contact.ContactUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.google.GoogleUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.instagram.InstagramUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.GoogleUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.instagram.InstagramUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.mail.MailUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.map.MapUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.photo.PhotoUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.spotify.SpotifyUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.youtube.YouTubeUtils
-import kotlinx.coroutines.runBlocking
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.map.MapUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.photo.PhotoUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.spotify.SpotifyUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.youtube.YouTubeUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ChatBotFragment : Fragment() {
     private var _binding: FragmentChatBotBinding? = null
@@ -53,7 +57,7 @@ class ChatBotFragment : Fragment() {
         if (allGranted) {
             // Handle the case where all permissions are granted
         } else {
-            sendBotMessage("Necessary authorisations were not granted")
+            sendBotMessage(getString(R.string.permissions_not_granted))
         }
     }
 
@@ -63,7 +67,7 @@ class ChatBotFragment : Fragment() {
         if (isGranted) {
             // Actions to be taken when authorisation is granted
         } else {
-            sendBotMessage("The necessary permits were not granted.")
+            sendBotMessage(getString(R.string.storage_permissions_not_granted))
         }
     }
 
@@ -94,28 +98,19 @@ class ChatBotFragment : Fragment() {
 
         speechRecognizerHelper = SpeechRecognizerHelper(this) { userMessage ->
             sendMessage(Message(userMessage, false))
-            commandProcessor.processCommand(userMessage)
-            //sendGeminiResponse(userMessage)
+            showLoadingAnimation()
+            sendToGeminiAndProcessCommand(userMessage) { jsonResponse ->
+                hideLoadingAnimation()
+                commandProcessor.processCommand(jsonResponse)
+            }
         }
+
 
         if (savedInstanceState == null) {
             viewModel.setChatMode(false)
             sendMessage(Message("Welcome!", true))
             sendMessage(Message("How can I help you?", true))
         }
-        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
-            val rect = Rect()
-            binding.root.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = binding.root.height
-            val keypadHeight = screenHeight - rect.bottom
-
-            if (keypadHeight > screenHeight * 0.15) { // Klavye açıldı
-                binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
-            } else {
-
-            }
-        }
-
     }
 
     private fun setupUI() {
@@ -159,12 +154,14 @@ class ChatBotFragment : Fragment() {
                 sendMessage(Message(message, false))
                 binding.editTextMessage.text.clear()
                 switchToChatMode()
-                commandProcessor.processCommand(message)
+                showLoadingAnimation()
+                sendToGeminiAndProcessCommand(message) { response ->
+                    hideLoadingAnimation()
+                    commandProcessor.processCommand(response)
+                }
             }
         }
     }
-
-
 
     private fun sendMessage(message: Message) {
         viewModel.addMessage(message)
@@ -185,17 +182,17 @@ class ChatBotFragment : Fragment() {
         binding.recyclerView.gone()
     }
 
-     fun showLoadingAnimation() {
+    private fun showLoadingAnimation() {
         val loadingMessage = Message("", isBotMessage = true, isLoading = true)
         viewModel.addMessage(loadingMessage)
         binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
-     fun hideLoadingAnimation() {
+    fun hideLoadingAnimation() {
         viewModel.removeLoadingMessage()
     }
 
-     fun sendGeminiResponse(prompt: String) {
+    fun sendToGeminiAndProcessCommand(prompt: String, callback: (String) -> Unit) {
         val generativeModel = GenerativeModel(
             modelName = "gemini-1.5-flash",
             apiKey = GEMINI_API_KEY,
@@ -206,21 +203,24 @@ class ChatBotFragment : Fragment() {
                 maxOutputTokens = 8192
                 responseMimeType = "text/plain"
             },
-            // safetySettings = Adjust safety settings
-            // See https://ai.google.dev/gemini-api/docs/safety-settings
-            systemInstruction = content { text("Uygulamamız bir sesli veya text olarak asisstan uygulamasıdır Kullanıcının komutlarını dinlersin onlara göre işlemler yapabilirsin Mevcut uygulamama belli başlı komutlar var bunlar mesela;\nYoutube dan şarkı açtırma \nKamerayı açma\nFotoğrafları açma\nSpotfy açma\nRehberden birini arama\nMesaj gönderme\nSaat Uygulamasını açma\nAlarm kurdurma\nInstagrama girme\nGoogldan search etme \nVe de kullanıcının spesifik bir araştırma veya merak ettiği bir şey varsa onları araştırma yanıt vermen. Şimdi hepsi uygulamada json dosyalarında tutluyor ve uygun format gerekiyor çalışmaları için\nMesela Youtube da şarkı açtırma formatı. şu şekilde işler;\nBaşta youtube yazıcak sonrasında istenilen video ismi sonrasında aç \" Youtube sezen aksu git aç\"  senin burada yapman gereken ise mesela kullanıcı \"Sezen aksu git şarkısını aç\" dediğinde sen yukarıda ki formata çevirmen gerekiyor veya\" Youtube sezen aksu git şarkısı\" dediğinde de uygun formata çevirmen gerekiyor ki ben uygulamada çalıştırabilim\nMesela bir diğeri rehberden birini arama \nNormalde çalışması için başta rehberden sonra dediğim isim gelir sonra ara gelir bu şekilde çalışma işler örnek \"rehberden buse ara\" ama ben burada \"Buseyi ara\" dediğimde de sen doğru formata çevirmen gerekiyor uygun kelimeleri getirip veya isimdeki ekleri atıp uygun formata çevirmelisin. Veya başka türlü diyebilir sen onun birini araması gerektiğini anlayıp uygun json formatında bana geri vermen gerekiyor.\nGeri kalanı da sana anlatim kullanıcının istekleri analiz doğru formatta oluşturman lazım\n\nKullanıcıdan gelen komutları analiz et ve uygun JSON formatına çevir. Aşağıdaki komutları uygun JSON formatına çevir:\n\n1. \"YouTube'dan Sezen Aksu Git şarkısını aç\"\n2. \"Kamerayı aç\"\n3. \"Fotoğrafları aç\"\n4. \"Spotify'ı aç\"\n5. \"Buse'yi ara\"\n6. \"Buse'ye merhaba demek istiyorum\"\n7. \"Saat uygulamasını aç\"\n8. \"23:55 alarm kur\"\n9. \"Instagram'da username profiline bak\"\n10. \"Matematik search\"\n11. \"Beni Beşiktaş Meydanı'na götür\"\n\nÖrnek çıktılar:\n\n1. Kullanıcı Komutu: \"YouTube'dan Sezen Aksu Git şarkısını aç\"\n   JSON Formatı:\n   ```json\n   {\n     \"type\": \"open\",\n     \"target\": \"YouTube\",\n     \"action\": \"search\",\n     \"parameters\": {\n       \"query\": \"Sezen Aksu Git\"\n     }\n   }\n\nKullanıcı Komutu: \"Kamerayı aç\"\n{\n  \"type\": \"open\",\n  \"target\": \"Camera\",\n  \"action\": \"open\",\n  \"parameters\": {}\n}\n\nburada aç demese bile sen anlayıp açman lazım\n\nfotoğrafları aç dediğinde \n{\n  \"type\": \"open\",\n  \"target\": \"Gallery\",\n  \"action\": \"open\",\n  \"parameters\": {}\n}\n\n{\n  \"type\": \"open\",\n  \"target\": \"Spotify\",\n  \"action\": \"open\",\n  \"parameters\": {}\n}\n\n{\n  \"type\": \"call\",\n  \"target\": \"Contacts\",\n  \"action\": \"call\",\n  \"parameters\": {\n    \"contactName\": \"Buse\"\n  }\n}\n\nmesaj gönderme\n\n{\n  \"type\": \"message\",\n  \"target\": \"Contacts\",\n  \"action\": \"send\",\n  \"parameters\": {\n    \"contactName\": \"Buse\",\n    \"message\": \"merhaba\"\n  }\n}\n\nsaat uygulamasını aç \n{\n  \"type\": \"open\",\n  \"target\": \"Clock\",\n  \"action\": \"open\",\n  \"parameters\": {}\n}\n\nKullanıcı Komutu: \"23:55 alarm kur\"\n{\n  \"type\": \"alarm\",\n  \"target\": \"Clock\",\n  \"action\": \"set\",\n  \"parameters\": {\n    \"time\": \"23:55\"\n  }\n}\nburada 23.55 de yazabilir ama sen onu doğru formata çevir\n\n{\n  \"type\": \"search\",\n  \"target\": \"Google\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Matematik\"\n  }\n}\n\nburada  search işlemi derse ona göre döndür\n\n{\n  \"type\": \"navigate\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"route\",\n  \"parameters\": {\n    \"destination\": \"Beşiktaş Meydanı\"\n  }\n}\nburada götür diyebilir navigasyondan yol tarifi diyebilir vs üretebilirsin ama sen kullanıcının yol tarifi uygulamasını açmak istediğini anladığında bana uygun formatta döndür\n\nbunlar dışında bir şey araştırmak istiyorsa da kullanıcıya cevap verebilirsin doğru cevabı") },
+            systemInstruction = content {
+                text(R.string.gemini_system_instruction.toString())
+            }
         )
 
-         runBlocking {
-             try {
-                 val response = generativeModel.generateContent(prompt)
-                 hideLoadingAnimation()
-                 sendBotMessage(response.text.toString())
-             } catch (e: Exception) {
-                 hideLoadingAnimation()
-                 sendBotMessage("An error occurred: ${e.message}")
-             }
-         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    generativeModel.generateContent(prompt)
+                }
+                val jsonResponse = response.text.toString()
+                Log.d("GeminiResponse", jsonResponse)
+                callback(jsonResponse)
+            } catch (e: Exception) {
+                hideLoadingAnimation()
+                sendBotMessage("An error occurred: ${e.message}")
+            }
+        }
     }
 
     fun openGoogleSearch(query: String) {
@@ -228,70 +228,43 @@ class ChatBotFragment : Fragment() {
             sendBotMessage(errorMessage)
         }
     }
-
-
     fun searchAndOpenYouTube(query: String) {
         YouTubeUtils.searchAndOpenYouTube(this, query)
     }
-
     fun openGoogleMapsForDestination(destination: String) {
         MapUtils.openGoogleMapsForDestination(this, destination)
     }
-
     fun findContactAndCall(contactName: String) {
         ContactUtils.findContactAndCall(this, contactName)
     }
-
     fun findContactAndSendMessage(contactName: String, message: String) {
         ContactUtils.findContactAndSendMessage(this, contactName, message)
     }
-
-    fun getPhotosByDateRange(startDate: Long, endDate: Long) {
-        PhotoUtils.getPhotosByDateRange(this, startDate, endDate)
-    }
-
     fun openGooglePhotos() {
-        PhotoUtils.openGooglePhotos(this)
+        PhotoUtils.openGooglePhotos(requireContext()) { errorMessage ->
+            sendBotMessage(errorMessage)
+        }
     }
-
     fun openSpotify() {
         SpotifyUtils.openSpotify(requireContext()) { errorMessage ->
             sendBotMessage(errorMessage)
         }
     }
-
-    fun searchSpotify(query: String) {
-        SpotifyUtils.searchSpotify(requireContext(), query) { errorMessage ->
-            sendBotMessage(errorMessage)
-        }
-    }
-
     fun openInstagram() {
         InstagramUtils.openInstagram(requireContext()) { errorMessage ->
             sendBotMessage(errorMessage)
         }
     }
-
-    fun openInstagramProfile(username: String) {
-        InstagramUtils.openInstagramProfile(requireContext(), username) { errorMessage ->
-            sendBotMessage(errorMessage)
-        }
-    }
-
     fun openCamera() {
         CameraUtils.openCamera(this)
     }
-
-
     fun setAlarm(hour: Int, minute: Int, message: String) {
         AlarmUtils.setAlarm(requireContext(), hour, minute, message)
 
     }
-
     fun openClockApp() {
         AlarmUtils.showAlarms(requireContext())
     }
-
     fun openMailApp() {
         MailUtils.openMailApp(requireContext()) { message ->
             sendBotMessage(message)

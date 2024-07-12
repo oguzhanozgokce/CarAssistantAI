@@ -13,8 +13,10 @@ class ChatBotViewModel : ViewModel() {
     val isChatMode: LiveData<Boolean> = _isChatMode
 
     fun addMessage(message: Message) {
-        _messages.value?.add(message)
-        _messages.value = _messages.value
+        _messages.value?.let {
+            it.add(message)
+            _messages.value = it
+        }
         _isChatMode.value = true
     }
 

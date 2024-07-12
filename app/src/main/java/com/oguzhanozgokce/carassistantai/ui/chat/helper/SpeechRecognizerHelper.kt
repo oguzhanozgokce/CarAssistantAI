@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import java.util.Locale
 
-// Ses Tanima Islemleri
+
 class SpeechRecognizerHelper(
     fragment: Fragment,
     private val onResult: (String) -> Unit
@@ -25,6 +25,7 @@ class SpeechRecognizerHelper(
         }
     }
 
+    @Synchronized
     fun startVoiceInput() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(

@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
+import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 
 object ContactUtils {
@@ -52,10 +53,12 @@ object ContactUtils {
                 val name = it.getString(nameIndex)
                 val number = it.getString(numberIndex)
 
-                fragment.sendBotMessage("$name arıyor...")
+                val messageSendingText = fragment.getString(R.string.contact_calling)
+                fragment.sendBotMessage("$name $messageSendingText")
                 makePhoneCall(fragment, number)
             } else {
-                fragment.sendBotMessage("Rehberde $contactName isimli kişi bulunamadı.")
+                val contactNotFoundText = fragment.getString(R.string.contact_not_found, contactName)
+                fragment.sendBotMessage(contactNotFoundText)
             }
         }
     }
@@ -120,10 +123,12 @@ object ContactUtils {
                 val name = it.getString(nameIndex)
                 val number = it.getString(numberIndex)
 
-                fragment.sendBotMessage("$name kişisine mesaj gönderiliyor...")
+                val messageSendingText = fragment.getString(R.string.contact_message_sending)
+                fragment.sendBotMessage("$name $messageSendingText")
                 sendSMS(fragment, number, message)
             } else {
-                fragment.sendBotMessage("Rehberde $contactName isimli kişi bulunamadı.")
+                val contactNotFoundText = fragment.getString(R.string.contact_not_found, contactName)
+                fragment.sendBotMessage(contactNotFoundText)
             }
         }
     }

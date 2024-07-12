@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
-
+import com.oguzhanozgokce.carassistantai.R
 
 
 object MailUtils {
@@ -20,11 +20,11 @@ object MailUtils {
             if (intent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(intent)
             } else {
-                sendBotMessage("No email app found to open. Trying to open web mail...")
+                sendBotMessage(context.getString(R.string.no_email_app_found))
                 openWebMail(context, sendBotMessage)
             }
         } catch (e: Exception) {
-            sendBotMessage("An unexpected error occurred while opening the email app.")
+            sendBotMessage(context.getString(R.string.unexpected_error_email_app))
             openWebMail(context, sendBotMessage)
         }
     }
@@ -35,14 +35,15 @@ object MailUtils {
             if (webIntent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(webIntent)
             } else {
-                sendBotMessage("No email app or web browser found to open the web mail.")
-                Log.e(TAG, "No web browser found to open the web mail.")
+                sendBotMessage(context.getString(R.string.no_email_or_browser_found))
+                Log.e(TAG, context.getString(R.string.no_browser_found_log))
             }
         } catch (e: Exception) {
-            sendBotMessage("An unexpected error occurred while opening the web mail.")
-            Log.e(TAG, "An unexpected error occurred while opening the web mail", e)
+            sendBotMessage(context.getString(R.string.unexpected_error_web_mail))
+            Log.e(TAG, context.getString(R.string.unexpected_error_web_mail_log), e)
         }
     }
 }
+
 
 
