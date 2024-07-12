@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.ui.chat.utils.youtube
+package com.oguzhanozgokce.carassistantai.ui.chat.utils.app.youtube
 
 import android.content.Intent
 import android.net.Uri

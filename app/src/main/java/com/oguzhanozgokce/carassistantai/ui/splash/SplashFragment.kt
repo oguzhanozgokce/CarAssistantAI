@@ -13,7 +13,6 @@ class SplashFragment : Fragment() {
     private var _binding: FragmentSplashBinding? = null
     private val binding get() = _binding!!
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,11 +28,8 @@ class SplashFragment : Fragment() {
             findNavController().navigate(action)
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
 }
