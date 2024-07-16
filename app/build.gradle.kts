@@ -1,8 +1,22 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("androidx.navigation.safeargs.kotlin")
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { stream ->
+        localProperties.load(stream)
+    }
+}
+
+val geminiApiKey: String = localProperties.getProperty("GEMINI_API_KEY") ?: ""
+val youtubeApiKey: String = localProperties.getProperty("YOUTUBE_API_KEY") ?: ""
+
 
 android {
     namespace = "com.oguzhanozgokce.carassistantai"
@@ -19,14 +33,22 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
+            buildConfigField("String", "YOUTUBE_API_KEY", "\"${youtubeApiKey}\"")
+        }
+        getByName("debug") {
+            buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
+            buildConfigField("String", "YOUTUBE_API_KEY", "\"${geminiApiKey}\"")
         }
     }
+
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -36,16 +58,16 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
-    packagingOptions {
-        exclude ("META-INF/DEPENDENCIES")
-        exclude ("META-INF/NOTICE")
-        exclude ("META-INF/LICENSE")
+    packaging {
+        resources.excludes.add("META-INF/DEPENDENCIES")
+        resources.excludes.add("META-INF/NOTICE")
+        resources.excludes.add("META-INF/LICENSE")
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -58,32 +80,28 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    //retrofit
+    // retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
-    //okhttp
+    // okhttp
     implementation(libs.okhttp)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.databinding.runtime)
 
-    //google maps
+    // google maps
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
 
-    //lottie
+    // lottie
     implementation(libs.lottie)
 
-    //google vision
+    // google vision
     implementation(libs.google.api.client.android)
     implementation(libs.google.api.services.youtube)
     implementation(libs.google.http.client.gson)
     implementation(libs.generativeai.v060)
 
-    //json
+    // json
     implementation(libs.gson)
-
-
-
-
 }
