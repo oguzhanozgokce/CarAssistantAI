@@ -7,5 +7,6 @@ data class Parameters(
     val message: String? = null,
     val dateStr: String? = null,
     val time: String? = null,
-    val username: String? = null
+    val username: String? = null,
+    val placeType : String? = null
 )

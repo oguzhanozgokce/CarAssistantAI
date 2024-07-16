@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CarAssistantAI</string>
     <!-- TODO: Remove or change this placeholder text -->
+    <string name="app_intro">Hello! I am your smart assistant. I can listen to your voice or text commands, analyze them, and perform various tasks."</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="type_a_message">Type a message</string>
     <string name="tell_me_a_joke">Tell me a joke.</string>
@@ -16,6 +17,9 @@
     <string name="welcome">Welcome</string>
     <string name="car_image">Car image</string>
     <string name="modelName">gemini-1.5-flash</string>
+
+    <!-- Speech Recognition Strings -->
+    <string name="listening_to_you">Listening to you...</string>
 
     <!-- Command Processor Strings -->
     <string name="no_query_specified_for_youtube">No query specified for YouTube search.</string>
@@ -66,6 +70,8 @@
     <string name="unexpected_error_web_mail_log">An unexpected error occurred while opening the web mail</string>
     <!-- Maps Strings -->
     <string name="google_maps_not_installed">Google Maps app is not installed</string>
+    <string name="no_place_type_specified">No place type specified</string>
+
 
 
     <!-- Gemini System Instruction -->

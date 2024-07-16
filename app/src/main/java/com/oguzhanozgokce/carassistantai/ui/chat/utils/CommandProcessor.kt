@@ -126,6 +126,17 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     fragment.sendBotMessage(fragment.getString(R.string.could_not_understand_alarm_time))
                 }
             }
+            "show" -> {
+                if (command.target.equals("googlemaps", ignoreCase = true)) {
+                    val placeType = command.parameters.placeType
+                    if (!placeType.isNullOrEmpty()) {
+                        Log.d(TAG, "Place type: $placeType")
+                        fragment.showPlacesOnGoogleMaps(placeType)
+                    } else {
+                        fragment.sendBotMessage(fragment.getString(R.string.no_place_type_specified))
+                    }
+                }
+            }
             "unknown" -> {
                 fragment.sendToGeminiAndProcessCommand(command.toString()) { response ->
                     processCommand(response)
