@@ -109,7 +109,7 @@ class ChatBotFragment : Fragment() {
         if (savedInstanceState == null) {
             viewModel.setChatMode(false)
             sendMessage(Message("Welcome!", true))
-            sendMessage(Message("How can I help you?", true))
+            sendMessage(Message(getString(R.string.app_intro),true))
         }
     }
 
@@ -194,7 +194,7 @@ class ChatBotFragment : Fragment() {
 
     fun sendToGeminiAndProcessCommand(prompt: String, callback: (String) -> Unit) {
         val generativeModel = GenerativeModel(
-            modelName = "gemini-1.5-flash",
+            modelName = "gemini-1.5-pro",
             apiKey = BuildConfig.GEMINI_API_KEY,
             generationConfig = generationConfig {
                 temperature = 1f
@@ -204,7 +204,7 @@ class ChatBotFragment : Fragment() {
                 responseMimeType = "text/plain"
             },
             systemInstruction = content {
-                text("Uygulamam sesli veya text ile çalışan asisstant uygulamasıdır. Kullanıcının kotmurlarını dinleyip analiz edip doğru işlemleri yaptırman gerekir. İki bölümden oluşuyor birincidi telefonun kendi içerisindeki komutlar mesela kamera açtırma, youtubedan şarkı açtırma, spotfy açtırma veya beni şuraya götür dediğinde haritayı açtırması gibi işlemlerden oluşuyor böyle komutları anladığında bana json türünde veri göndermeni istiyorum. Nasıl json komutları göndermen gerekitiğini yazacağım  \n\n\nJSON Formatı:\n\n```json\n{\n  \"type\": \"open\",\n  \"target\": \"YouTube\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Sezen Aksu Git\"\n  }\n}\n```\n\nKamera aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Camera\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nfotoğrafları aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Gallery\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}  \n  \nSpotfy aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Spotify\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nSaat aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\nsaat uygulamasını aç\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Clock\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n  \nEğerki kendisi arama yapmak isterse search varsa sen bu json türünü bana gönder\n\n{\n\n\"type\": \"search\",\n\n\"target\": \"Google\",\n\n\"action\": \"search\",\n\n\"parameters\": {  \n\"query\": \"Matematik\"\n\n}\n\n}  \n  \n  \nbunlar dışında kalanları sen anlayıp kullancının sorunlarını nazik tatlı bir dille cevapla yapamadığın işlemler için özür dile. Bilgi sorularını vs cevaplayabilirsin\n")
+                text("Uygulamam sesli veya text ile çalışan asisstant uygulamasıdır. Kullanıcının kotmurlarını dinleyip analiz edip doğru işlemleri yaptırman gerekir. İki bölümden oluşuyor birincidi telefonun kendi içerisindeki komutlar mesela kamera açtırma, youtubedan şarkı açtırma, spotfy açtırma veya beni şuraya götür dediğinde haritayı açtırması gibi işlemlerden oluşuyor böyle komutları anladığında bana json türünde veri göndermeni istiyorum. Nasıl json komutları göndermen gerekitiğini yazacağım  \n\n\nJSON Formatı:\n\n```json\n{\n  \"type\": \"open\",\n  \"target\": \"YouTube\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Sezen Aksu Git\"\n  }\n}\n```\n\nKamera aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Camera\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nfotoğrafları aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Gallery\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}  \n  \nSpotfy aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Spotify\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nSaat aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\nsaat uygulamasını aç\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Clock\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n  \nEğerki kendisi arama yapmak isterse search varsa sen bu json türünü bana gönder\n\n{\n\n\"type\": \"search\",\n\n\"target\": \"Google\",\n\n\"action\": \"search\",\n\n\"parameters\": {  \n\"query\": \"Matematik\"\n\n}\n}  \n\nBirisini arama komutu gelirse veya rehberden birisine ara derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n{\n  \"type\": \"call\",\n  \"target\": \"Contacts\",\n  \"action\": \"call\",\n  \"parameters\": {\n    \"contactName\": \"Buse\"\n  }\n}\n\nBirisini mesaj gönder komutu gelirse veya rehberden birisine mesaj gönder derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n\n  {\n  \"type\": \"message\",\n  \"target\": \"Contacts\",\n  \"action\": \"send\",\n  \"parameters\": {\n    \"contactName\": \"Buse\",\n    \"message\": \"merhaba\"\n  }\n}\n\nBir yere gitmek isterse veya yol tarifi derse veya beni götür derse bana bu json türünde veriyi gönder\n{\n  \"type\": \"navigate\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"route\",\n  \"parameters\": {\n    \"destination\": \"Beşiktaş Meydanı\"\n  }\n}\n\nMesela kullanıcı bana en iyi hastaneleri veya pizzacıları veya yakınlarındaki eczaneleri  göster derse bana bu json türünde veriyi döndür\n\n{\n  \"type\": \"show\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"placeType\": \"hospitals\"\n  }\n}\n  \nbunlar dışında kalanları sen anlayıp kullancının sorunlarını nazik tatlı bir dille cevapla yapamadığın işlemler için özür dile. Bilgi sorularını vs cevaplayabilirsin\n")
             }
         )
 
@@ -233,6 +233,9 @@ class ChatBotFragment : Fragment() {
     }
     fun openGoogleMapsForDestination(destination: String) {
         MapUtils.openGoogleMapsForDestination(this, destination)
+    }
+    fun showPlacesOnGoogleMaps(placeType: String) {
+        MapUtils.showPlacesOnGoogleMaps(this, placeType)
     }
     fun findContactAndCall(contactName: String) {
         ContactUtils.findContactAndCall(this, contactName)

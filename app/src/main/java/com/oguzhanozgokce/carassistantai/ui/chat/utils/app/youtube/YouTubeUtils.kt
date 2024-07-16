@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.fragment.app.Fragment
 import com.oguzhanozgokce.carassistantai.BuildConfig
+import com.oguzhanozgokce.carassistantai.common.Constant.YOUTUBE_PACKET_NAME
+import com.oguzhanozgokce.carassistantai.common.Constant.YOUTUBE_WEB_URL
 import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,15 +34,15 @@ object YouTubeUtils {
     private fun openYouTubeWithVideoId(fragment: Fragment, videoId: String) {
         val intent = Intent(
             Intent.ACTION_VIEW,
-            Uri.parse("https://www.youtube.com/watch?v=$videoId")
+            Uri.parse("$YOUTUBE_WEB_URL$videoId")
         ).apply {
-            setPackage("com.google.android.youtube")
+            setPackage(YOUTUBE_PACKET_NAME)
         }
         if (intent.resolveActivity(fragment.requireActivity().packageManager) != null) {
             fragment.startActivity(intent)
         } else {
             val webIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$videoId"))
+                Intent(Intent.ACTION_VIEW, Uri.parse("$YOUTUBE_WEB_URL$videoId"))
             fragment.startActivity(webIntent)
         }
     }

@@ -10,16 +10,12 @@ object AppUtils {
     fun openApp(context: Context, packageName: String, appUrl: String, sendBotMessage: (String) -> Unit, errorMessageResId: Int) {
         val pm = context.packageManager
         try {
-            // Check if the app is installed
             pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
-
-            // Create an intent to launch the app
             val intent = Intent(Intent.ACTION_MAIN).apply {
                 addCategory(Intent.CATEGORY_LAUNCHER)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 `package` = packageName
             }
-
             if (intent.resolveActivity(pm) != null) {
                 context.startActivity(intent)
             } else {

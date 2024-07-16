@@ -17,11 +17,3 @@ object GoogleUtils {
         AppUtils.openWebUrl(context, googleSearchUrl, onFailure, R.string.google_search_app_not_found)
     }
 }
-
-
-/**
- * // Alternatively, you can use a dialogue to show a warning message to the user.
- *             val fallbackUri = Uri.parse("https://www.google.com/search?q=$encodedQuery")
- *             val fallbackIntent = Intent(Intent.ACTION_VIEW, fallbackUri)
- *             context.startActivity(fallbackIntent)
- */
