@@ -11,11 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.oguzhanozgokce.carassistantai.BuildConfig
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.asTextOrNull
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
 import com.oguzhanozgokce.carassistantai.R
-import com.oguzhanozgokce.carassistantai.common.Constant.GEMINI_API_KEY
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.visible
 import com.oguzhanozgokce.carassistantai.data.model.message.Message
@@ -44,7 +45,6 @@ class ChatBotFragment : Fragment() {
     private val commandProcessor by lazy { CommandProcessor(this) }
     private val viewModel: ChatBotViewModel by viewModels()
     private lateinit var speechRecognizerHelper: SpeechRecognizerHelper
-
 
     companion object {
         const val TAG = "ChatBotFragment"
@@ -195,7 +195,7 @@ class ChatBotFragment : Fragment() {
     fun sendToGeminiAndProcessCommand(prompt: String, callback: (String) -> Unit) {
         val generativeModel = GenerativeModel(
             modelName = "gemini-1.5-flash",
-            apiKey = GEMINI_API_KEY,
+            apiKey = BuildConfig.GEMINI_API_KEY,
             generationConfig = generationConfig {
                 temperature = 1f
                 topK = 64
@@ -204,7 +204,7 @@ class ChatBotFragment : Fragment() {
                 responseMimeType = "text/plain"
             },
             systemInstruction = content {
-                text(R.string.gemini_system_instruction.toString())
+                text("Uygulamam sesli veya text ile çalışan asisstant uygulamasıdır. Kullanıcının kotmurlarını dinleyip analiz edip doğru işlemleri yaptırman gerekir. İki bölümden oluşuyor birincidi telefonun kendi içerisindeki komutlar mesela kamera açtırma, youtubedan şarkı açtırma, spotfy açtırma veya beni şuraya götür dediğinde haritayı açtırması gibi işlemlerden oluşuyor böyle komutları anladığında bana json türünde veri göndermeni istiyorum. Nasıl json komutları göndermen gerekitiğini yazacağım  \n\n\nJSON Formatı:\n\n```json\n{\n  \"type\": \"open\",\n  \"target\": \"YouTube\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Sezen Aksu Git\"\n  }\n}\n```\n\nKamera aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Camera\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nfotoğrafları aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Gallery\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}  \n  \nSpotfy aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Spotify\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nSaat aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\nsaat uygulamasını aç\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Clock\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n  \nEğerki kendisi arama yapmak isterse search varsa sen bu json türünü bana gönder\n\n{\n\n\"type\": \"search\",\n\n\"target\": \"Google\",\n\n\"action\": \"search\",\n\n\"parameters\": {  \n\"query\": \"Matematik\"\n\n}\n\n}  \n  \n  \nbunlar dışında kalanları sen anlayıp kullancının sorunlarını nazik tatlı bir dille cevapla yapamadığın işlemler için özür dile. Bilgi sorularını vs cevaplayabilirsin\n")
             }
         )
 
@@ -213,7 +213,7 @@ class ChatBotFragment : Fragment() {
                 val response = withContext(Dispatchers.IO) {
                     generativeModel.generateContent(prompt)
                 }
-                val jsonResponse = response.text.toString()
+                val jsonResponse = response.candidates.first().content.parts.first().asTextOrNull() ?: ""
                 Log.d("GeminiResponse", jsonResponse)
                 callback(jsonResponse)
             } catch (e: Exception) {

@@ -23,12 +23,17 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
             // Check if the response is a valid JSON
             val strippedResponse = response.trim().removeSurrounding("```json", "```").trim()
 
-            val commandType = object : TypeToken<Command>() {}.type
-            val command = gson.fromJson<Command>(strippedResponse, commandType)
-            handleCommand(command)
-            Log.d(TAG, "Command: $command")
+            if (isJson(strippedResponse)) {
+                val commandType = object : TypeToken<Command>() {}.type
+                val command = gson.fromJson<Command>(strippedResponse, commandType)
+                handleCommand(command)
+                Log.d(TAG, "Command: $command")
+            } else {
+                // If it's not a valid JSON, treat it as a plain text response
+                fragment.sendBotMessage(response)
+            }
         } catch (e: JsonSyntaxException) {
-            // If it's not a valid JSON, treat it as a plain text response
+            // If JSON parsing fails, treat it as a plain text response
             fragment.sendBotMessage(response)
         } catch (e: Exception) {
             fragment.hideLoadingAnimation()
@@ -38,8 +43,17 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
         }
     }
 
+    private fun isJson(response: String): Boolean {
+        return try {
+            gson.fromJson(response, Any::class.java)
+            true
+        } catch (e: JsonSyntaxException) {
+            false
+        }
+    }
+
     private fun handleCommand(command: Command) {
-        when (command.type) {
+        when (command.type.lowercase(Locale.getDefault())) {
             "open" -> {
                 when (command.target.lowercase(Locale.getDefault())) {
                     "youtube" -> {
@@ -122,5 +136,4 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
             }
         }
     }
-
 }
