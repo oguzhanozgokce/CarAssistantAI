@@ -16,6 +16,7 @@ if (localPropertiesFile.exists()) {
 
 val geminiApiKey: String = localProperties.getProperty("GEMINI_API_KEY") ?: ""
 val youtubeApiKey: String = localProperties.getProperty("YOUTUBE_API_KEY") ?: ""
+val phoneNumber: String = localProperties.getProperty("PHONE_NUMBER") ?: ""
 
 
 android {
@@ -41,10 +42,12 @@ android {
             )
             buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
             buildConfigField("String", "YOUTUBE_API_KEY", "\"${youtubeApiKey}\"")
+            buildConfigField("String", "PHONE_NUMBER", "\"${phoneNumber}\"")
         }
         getByName("debug") {
             buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
-            buildConfigField("String", "YOUTUBE_API_KEY", "\"${geminiApiKey}\"")
+            buildConfigField("String", "YOUTUBE_API_KEY", "\"${youtubeApiKey}\"")
+            buildConfigField("String", "PHONE_NUMBER", "\"${phoneNumber}\"")
         }
     }
 
