@@ -57,10 +57,6 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int = messages.size
 
-    fun addMessage(message: Message) {
-        messages.add(message)
-        notifyItemInserted(messages.size - 1)
-    }
 
     fun setMessages(newMessages: List<Message>) {
         messages.clear()
