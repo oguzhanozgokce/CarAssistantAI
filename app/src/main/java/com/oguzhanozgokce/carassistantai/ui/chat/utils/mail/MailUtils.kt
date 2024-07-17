@@ -18,10 +18,9 @@ object MailUtils {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse(MAIL_TO)
             }
-
-            if (intent.resolveActivity(context.packageManager) != null) {
+            try {
                 context.startActivity(intent)
-            } else {
+            } catch (e: Exception) {
                 sendBotMessage(context.getString(R.string.no_email_app_found))
                 openWebMail(context, sendBotMessage)
             }

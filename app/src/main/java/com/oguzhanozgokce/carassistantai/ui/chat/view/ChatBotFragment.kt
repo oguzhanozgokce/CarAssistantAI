@@ -1,12 +1,12 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.view
 
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +17,7 @@ import com.google.ai.client.generativeai.type.asTextOrNull
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
 import com.oguzhanozgokce.carassistantai.R
+import com.oguzhanozgokce.carassistantai.common.Constant.GEMINI_MODEL_NAME
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.visible
 import com.oguzhanozgokce.carassistantai.data.model.message.Message
@@ -33,6 +34,7 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.mail.MailUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.map.MapUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.photo.PhotoUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.spotify.SpotifyUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.whatsapp.WhatsAppUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.youtube.YouTubeUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,9 +52,7 @@ class ChatBotFragment : Fragment() {
         const val TAG = "ChatBotFragment"
     }
 
-    val requestContactPermissionsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
+    val requestContactPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
         val allGranted = permissions.entries.all { it.value }
         if (allGranted) {
             // Handle the case where all permissions are granted
@@ -61,24 +61,12 @@ class ChatBotFragment : Fragment() {
         }
     }
 
-    private val requestStoragePermissionsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            // Actions to be taken when authorisation is granted
+    val cameraActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            // Handle the camera result here
         } else {
-            sendBotMessage(getString(R.string.storage_permissions_not_granted))
+            sendBotMessage(getString(R.string.camera_app_not_found))
         }
-    }
-
-
-    fun requestStoragePermission() {
-        val readPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            android.Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            android.Manifest.permission.READ_EXTERNAL_STORAGE
-        }
-        requestStoragePermissionsLauncher.launch(readPermission)
     }
 
 
@@ -194,7 +182,7 @@ class ChatBotFragment : Fragment() {
 
     fun sendToGeminiAndProcessCommand(prompt: String, callback: (String) -> Unit) {
         val generativeModel = GenerativeModel(
-            modelName = "gemini-1.5-pro",
+            modelName = GEMINI_MODEL_NAME,
             apiKey = BuildConfig.GEMINI_API_KEY,
             generationConfig = generationConfig {
                 temperature = 1f
@@ -204,7 +192,7 @@ class ChatBotFragment : Fragment() {
                 responseMimeType = "text/plain"
             },
             systemInstruction = content {
-                text("Uygulamam sesli veya text ile çalışan asisstant uygulamasıdır. Kullanıcının kotmurlarını dinleyip analiz edip doğru işlemleri yaptırman gerekir. İki bölümden oluşuyor birincidi telefonun kendi içerisindeki komutlar mesela kamera açtırma, youtubedan şarkı açtırma, spotfy açtırma veya beni şuraya götür dediğinde haritayı açtırması gibi işlemlerden oluşuyor böyle komutları anladığında bana json türünde veri göndermeni istiyorum. Nasıl json komutları göndermen gerekitiğini yazacağım  \n\n\nJSON Formatı:\n\n```json\n{\n  \"type\": \"open\",\n  \"target\": \"YouTube\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Sezen Aksu Git\"\n  }\n}\n```\n\nKamera aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Camera\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nfotoğrafları aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Gallery\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}  \n  \nSpotfy aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Spotify\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nSaat aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\nsaat uygulamasını aç\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Clock\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n  \nEğerki kendisi arama yapmak isterse search varsa sen bu json türünü bana gönder\n\n{\n\n\"type\": \"search\",\n\n\"target\": \"Google\",\n\n\"action\": \"search\",\n\n\"parameters\": {  \n\"query\": \"Matematik\"\n\n}\n}  \n\nBirisini arama komutu gelirse veya rehberden birisine ara derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n{\n  \"type\": \"call\",\n  \"target\": \"Contacts\",\n  \"action\": \"call\",\n  \"parameters\": {\n    \"contactName\": \"Buse\"\n  }\n}\n\nBirisini mesaj gönder komutu gelirse veya rehberden birisine mesaj gönder derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n\n  {\n  \"type\": \"message\",\n  \"target\": \"Contacts\",\n  \"action\": \"send\",\n  \"parameters\": {\n    \"contactName\": \"Buse\",\n    \"message\": \"merhaba\"\n  }\n}\n\nBir yere gitmek isterse veya yol tarifi derse veya beni götür derse bana bu json türünde veriyi gönder\n{\n  \"type\": \"navigate\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"route\",\n  \"parameters\": {\n    \"destination\": \"Beşiktaş Meydanı\"\n  }\n}\n\nMesela kullanıcı bana en iyi hastaneleri veya pizzacıları veya yakınlarındaki eczaneleri  göster derse bana bu json türünde veriyi döndür\n\n{\n  \"type\": \"show\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"placeType\": \"hospitals\"\n  }\n}\n  \nbunlar dışında kalanları sen anlayıp kullancının sorunlarını nazik tatlı bir dille cevapla yapamadığın işlemler için özür dile. Bilgi sorularını vs cevaplayabilirsin\n")
+                text("Uygulamam sesli veya text ile çalışan asisstant uygulamasıdır. Kullanıcının kotmurlarını dinleyip analiz edip doğru işlemleri yaptırman gerekir. İki bölümden oluşuyor birincidi telefonun kendi içerisindeki komutlar mesela kamera açtırma, youtubedan şarkı açtırma, spotfy açtırma veya beni şuraya götür dediğinde haritayı açtırması gibi işlemlerden oluşuyor böyle komutları anladığında bana json türünde veri göndermeni istiyorum. Nasıl json komutları göndermen gerekitiğini yazacağım  \n\n\nJSON Formatı:\n\n```json\n{\n  \"type\": \"open\",\n  \"target\": \"YouTube\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Sezen Aksu Git\"\n  }\n}\n```\n\nKamera aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Camera\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nfotoğrafları aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Gallery\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}  \n  \nSpotfy aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Spotify\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nSaat aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\nsaat uygulamasını aç\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Clock\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n  \nEğerki kendisi arama yapmak isterse search varsa sen bu json türünü bana gönder\n\n{\n\n\"type\": \"search\",\n\n\"target\": \"Google\",\n\n\"action\": \"search\",\n\n\"parameters\": {  \n\"query\": \"Matematik\"\n\n}\n}  \n\nBirisini arama komutu gelirse veya rehberden birisine ara derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n{\n  \"type\": \"call\",\n  \"target\": \"Contacts\",\n  \"action\": \"call\",\n  \"parameters\": {\n    \"contactName\": \"Buse\"\n  }\n}\n\nBirisini mesaj gönder komutu gelirse veya rehberden birisine mesaj gönder derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n\n  {\n  \"type\": \"message\",\n  \"target\": \"Contacts\",\n  \"action\": \"send\",\n  \"parameters\": {\n    \"contactName\": \"Buse\",\n    \"message\": \"merhaba\"\n  }\n}\n\nBir yere gitmek isterse veya yol tarifi derse veya beni götür derse bana bu json türünde veriyi gönder\n{\n  \"type\": \"navigate\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"route\",\n  \"parameters\": {\n    \"destination\": \"Beşiktaş Meydanı\"\n  }\n}\n\nMesela kullanıcı bana en iyi hastaneleri veya pizzacıları veya yakınlarındaki eczaneleri  göster derse bana bu json türünde veriyi döndür\n\n{\n  \"type\": \"show\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"placeType\": \"hospitals\"\n  }\n}\n\nMesela kullanıcı alarm kurdurmak isterse sana saat verirse alarm kur derse bunu anlayıp bana bu json türünü döndür\n{\n    \"type\": \"alarm\",\n    \"target\": \"Clock\",\n    \"action\": \"set\",\n    \"parameters\": {\n        \"time\": \"08:30\",\n        \"message\": \"Time to wake up\"\n    }\n}\n\nMail aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Mail\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nWhatsApp aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"whatsapp\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n\nbunlar dışında kalanları sen anlayıp kullancının sorunlarını nazik tatlı bir dille cevapla yapamadığın işlemler için özür dile. Bilgi sorularını vs cevaplayabilirsin\n")
             }
         )
 
@@ -214,11 +202,11 @@ class ChatBotFragment : Fragment() {
                     generativeModel.generateContent(prompt)
                 }
                 val jsonResponse = response.candidates.first().content.parts.first().asTextOrNull() ?: ""
-                Log.d("GeminiResponse", jsonResponse)
+                Log.d(getString(R.string.gemini_response), jsonResponse)
                 callback(jsonResponse)
             } catch (e: Exception) {
                 hideLoadingAnimation()
-                sendBotMessage("An error occurred: ${e.message}")
+                sendBotMessage("${getString(R.string.an_error_occurred)}: ${e.message}")
             }
         }
     }
@@ -262,8 +250,9 @@ class ChatBotFragment : Fragment() {
         CameraUtils.openCamera(this)
     }
     fun setAlarm(hour: Int, minute: Int, message: String) {
-        AlarmUtils.setAlarm(requireContext(), hour, minute, message)
-
+        AlarmUtils.setAlarm(requireContext(), hour, minute, message) { errorMessage ->
+            sendBotMessage(errorMessage)
+        }
     }
     fun openClockApp() {
         AlarmUtils.showAlarms(requireContext())
@@ -273,7 +262,11 @@ class ChatBotFragment : Fragment() {
             sendBotMessage(message)
         }
     }
-
+    fun openWhatsApp() {
+       WhatsAppUtils.openWhatsAppChatWithMyNumber(requireContext()) { message ->
+            sendBotMessage(message)
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

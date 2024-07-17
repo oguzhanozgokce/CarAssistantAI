@@ -19,7 +19,7 @@
     <string name="modelName">gemini-1.5-flash</string>
 
     <!-- Speech Recognition Strings -->
-    <string name="listening_to_you">Listening to you...</string>
+    <string name="listening_to_you">Listening to you…</string>
 
     <!-- Command Processor Strings -->
     <string name="no_query_specified_for_youtube">No query specified for YouTube search.</string>
@@ -32,6 +32,8 @@
     <string name="could_not_understand_alarm_time">Could not understand the alarm time.</string>
     <string name="no_instagram_profile_specified">You did not specify the Instagram profile.</string>
     <string name="command_not_recognized">Command not recognized.</string>
+    <!-- Alarm Strings -->
+    <string name="alarm_app_not_found">Alarm application not found</string>
 
     <!-- SpotifyUtils Strings -->
     <string name="error_opening_spotify_app">An error occurred while opening the Spotify app.</string>
@@ -71,6 +73,16 @@
     <!-- Maps Strings -->
     <string name="google_maps_not_installed">Google Maps app is not installed</string>
     <string name="no_place_type_specified">No place type specified</string>
+    <!-- WhatsApp Strings -->
+    <string name="whatsapp_not_found">WhatsApp app not found</string>
+
+    <!-- Logcat Strings -->
+    <string name="destination">Destination</string>
+    <string name="encode_des">Encode destination</string>
+    <string name="gemini_response">GeminiResponse</string>
+    <string name="received_response">Received Response:</string>
+    <string name="an_error_occurred">An error occurred:</string>
+    <string name="choose_email_app">Choose email app</string>
 
 
 

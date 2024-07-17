@@ -12,9 +12,9 @@ import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 
 object MapUtils {
     fun openGoogleMapsForDestination(fragment: ChatBotFragment, destination: String) {
-        Log.e(ChatBotFragment.TAG, "Destination: $destination")
+        Log.e(ChatBotFragment.TAG, fragment.getString(R.string.destination, destination))
         val encodedDestination = Uri.encode(destination)
-        Log.e(ChatBotFragment.TAG, "Encoded Destination: $encodedDestination")
+        Log.e(ChatBotFragment.TAG, fragment.getString(R.string.encode_des, encodedDestination))
         val gmmIntentUri = Uri.parse("$GOOGLE_MAPS_WEB_URL$encodedDestination")
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
             setPackage(GOOGLE_MAPS_PACKAGE_NAME)

@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.data.model.json.Command
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils.setAlarm
 import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 import java.util.Locale
 
@@ -18,7 +19,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
 
     fun processCommand(response: String) {
         try {
-            Log.d(TAG, "Received Response: $response")
+            Log.d(TAG, "${fragment.getString(R.string.received_response)}: $response")
 
             // Check if the response is a valid JSON
             val strippedResponse = response.trim().removeSurrounding("```json", "```").trim()
@@ -70,6 +71,8 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     "instagram" -> fragment.openInstagram()
                     "camera" -> fragment.openCamera()
                     "clock" -> fragment.openClockApp()
+                    "mail" -> fragment.openMailApp()
+                    "whatsapp" -> fragment.openWhatsApp()
                 }
             }
             "navigate" -> {
@@ -112,12 +115,13 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
             }
             "alarm" -> {
                 val time = command.parameters.time
+                val message = command.parameters.message ?: "Alarm"
                 if (!time.isNullOrEmpty()) {
                     val parts = time.split(":")
                     if (parts.size == 2) {
                         val hour = parts[0].toInt()
                         val minute = parts[1].toInt()
-                        fragment.setAlarm(hour, minute, "Time to wake up!")
+                        fragment.setAlarm(hour, minute, message)
                         fragment.sendBotMessage("${fragment.getString(R.string.alarm_set_for)} $time")
                     } else {
                         fragment.sendBotMessage(fragment.getString(R.string.invalid_alarm_time_format))
