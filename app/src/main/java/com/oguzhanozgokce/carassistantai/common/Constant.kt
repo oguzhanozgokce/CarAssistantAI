@@ -21,5 +21,9 @@ object Constant {
     const val DESK_CLOCK_CLASS_NAME = "com.android.deskclock.DeskClock"
     const val WHATSAPP_PACKAGE_NAME = "com.whatsapp"
     const val WHATSAPP_URL = "https://play.google.com/store/apps/details?id=com.whatsapp"
+    const val KEEP_PACKAGE_NAME = "com.google.android.keep"
+    const val KEEP_WEB_URL = "https://keep.google.com"
+    const val MAPS_UTILS_TAG = "MapUtils"
+    const val NOTE_UTILS_TAG = "NoteUtils"
 
 }

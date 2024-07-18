@@ -8,5 +8,7 @@ data class Parameters(
     val dateStr: String? = null,
     val time: String? = null,
     val username: String? = null,
-    val placeType : String? = null
+    val placeType : String? = null,
+    val seconds: Int? = null,
+    val noteContent: String? = null
 )
