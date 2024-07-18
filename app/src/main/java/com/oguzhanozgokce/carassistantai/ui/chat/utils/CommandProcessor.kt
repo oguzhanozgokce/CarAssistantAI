@@ -16,25 +16,22 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
     companion object {
         private const val TAG = "CommandProcessor"
     }
-
     fun processCommand(response: String) {
         try {
             Log.d(TAG, "${fragment.getString(R.string.received_response)}: $response")
-
-            // Check if the response is a valid JSON
             val strippedResponse = response.trim().removeSurrounding("```json", "```").trim()
-
+            // Is your response a valid JSON?
             if (isJson(strippedResponse)) {
                 val commandType = object : TypeToken<Command>() {}.type
                 val command = gson.fromJson<Command>(strippedResponse, commandType)
                 handleCommand(command)
                 Log.d(TAG, "Command: $command")
             } else {
-                // If it's not a valid JSON, treat it as a plain text response
+                // If not JSON, write as string
                 fragment.sendBotMessage(response)
             }
         } catch (e: JsonSyntaxException) {
-            // If JSON parsing fails, treat it as a plain text response
+            // If JSON parsing fails, evaluate to string
             fragment.sendBotMessage(response)
         } catch (e: Exception) {
             fragment.hideLoadingAnimation()
@@ -73,6 +70,25 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     "clock" -> fragment.openClockApp()
                     "mail" -> fragment.openMailApp()
                     "whatsapp" -> fragment.openWhatsApp()
+                    "keep" -> fragment.openKeep()
+                    "stopwatch" -> fragment.startStopwatch()
+                    "timer" -> {
+                        val seconds = command.parameters.seconds
+                        val message = command.parameters.message ?: "Timer"
+                        if (seconds != null) {
+                            fragment.startTimer(seconds, message)
+                        } else {
+                            fragment.sendBotMessage(fragment.getString(R.string.no_timer_duration_specified))
+                        }
+                    }
+                    "save_note" -> {
+                        val noteContent = command.parameters.noteContent
+                        if (!noteContent.isNullOrEmpty()) {
+                            fragment.sendNoteKeep(noteContent)
+                        } else {
+                            fragment.sendBotMessage(fragment.getString(R.string.no_note_content_specified))
+                        }
+                    }
                 }
             }
             "navigate" -> {

@@ -28,7 +28,7 @@ object AppUtils {
         }
     }
 
-    private fun openAppWeb(context: Context, sendBotMessage: (String) -> Unit, url: String, errorMessageResId: Int) {
+    fun openAppWeb(context: Context, sendBotMessage: (String) -> Unit, url: String, errorMessageResId: Int) {
         try {
             val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             context.startActivity(webIntent)
