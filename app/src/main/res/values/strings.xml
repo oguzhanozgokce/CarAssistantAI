@@ -56,6 +56,10 @@
     <string name="unexpected_error_instagram_app">An unexpected error occurred while opening the Instagram app.</string>
     <string name="error_opening_instagram_web_app">An unexpected error occurred while opening the Instagram web app.</string>
     <string name="unexpected_error_instagram_profile">An unexpected error occurred while opening the Instagram profile.</string>
+    <!-- TwitterUtils Strings -->
+    <string name="error_opening_twitter_app">An error occurred while opening the Twitter app.</string>
+    <string name="invalid_command">Invalid Command</string>
+    <string name="no_message_specified">message not specified</string>
     <!-- GoogleUtils Strings -->
     <string name="google_search_uri">Google Search URI: %1$s</string>
     <string name="web_intent">Web Intent: %1$s</string>

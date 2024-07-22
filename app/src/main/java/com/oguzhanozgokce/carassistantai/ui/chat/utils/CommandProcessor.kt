@@ -66,6 +66,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     "gallery" -> fragment.openGooglePhotos()
                     "spotify" -> fragment.openSpotify()
                     "instagram" -> fragment.openInstagram()
+                    "twitter" -> fragment.openTwitter()
                     "camera" -> fragment.openCamera()
                     "clock" -> fragment.openClockApp()
                     "mail" -> fragment.openMailApp()
@@ -100,6 +101,20 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     } else {
                         fragment.sendBotMessage(fragment.getString(R.string.no_destination_specified))
                     }
+                }
+            }
+            "tweet" -> {
+                if (command.target.lowercase(Locale.getDefault()) == "twitter" &&
+                    command.action.lowercase(Locale.getDefault()) == "create_tweet") {
+
+                    val message = command.parameters.message
+                    if (!message.isNullOrEmpty()) {
+                       fragment.tweet(message)
+                    } else {
+                        fragment.sendBotMessage(fragment.getString(R.string.no_message_specified))
+                    }
+                } else {
+                    fragment.sendBotMessage(fragment.getString(R.string.invalid_command))
                 }
             }
             "search" -> {
