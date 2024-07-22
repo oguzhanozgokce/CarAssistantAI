@@ -19,7 +19,7 @@ object AlarmUtils {
         }
         try {
             context.startActivity(intent)
-            sendBotMessage(context.getString(R.string.alarm_set_for, "$hour:$minute"))
+            sendBotMessage(context.getString(R.string.alarm_set_for, hour, minute))
         } catch (e: Exception) {
             Toast.makeText(context,R.string.alarm_app_not_found, Toast.LENGTH_SHORT).show()
         }

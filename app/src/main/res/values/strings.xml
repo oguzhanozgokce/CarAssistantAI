@@ -27,7 +27,7 @@
     <string name="no_search_query_specified">You did not specify where you wanted to search.</string>
     <string name="no_contact_specified">You did not specify who you wanted to call.</string>
     <string name="insufficient_message_info">You did not give me enough information to send a message.</string>
-    <string name="alarm_set_for">Alarm set for</string>
+    <string name="alarm_set_for">Alarm set for %1$d:%2$d</string>
     <string name="invalid_alarm_time_format">Invalid time format for alarm.</string>
     <string name="could_not_understand_alarm_time">Could not understand the alarm time.</string>
     <string name="no_instagram_profile_specified">You did not specify the Instagram profile.</string>
@@ -36,7 +36,7 @@
     <string name="alarm_app_not_found">Alarm application not found</string>
     <string name="stopwatch_started"> Stopwatch started</string>
     <string name="stopwatch_app_not_found"> Stopwatch application not found</string>
-    <string name="timer_set_for">Timer set for</string>
+    <string name="timer_set_for">Timer set for %1$d minutes and %2$d seconds</string>
     <string name="timer_app_not_found">Timer application not found</string>
     <string name="no_timer_duration_specified">You did not specify the duration of the timer.</string>
     <!-- Keep Strings -->
@@ -65,6 +65,8 @@
     <string name="web_intent">Web Intent: %1$s</string>
     <string name="web_intent_started_successfully">Web intent started successfully</string>
     <string name="google_search_app_not_found">Google Search application not found</string>
+    <string name="no_results_found">No results found</string>
+    <string name="no_query_specified">No query specified</string>
     <!-- CameraUtils Strings -->
     <string name="camera_app_not_found">Camera application not found.</string>
     <!-- Message Adapter -->
@@ -85,6 +87,7 @@
     <string name="no_browser_found_log">No web browser found to open the web mail.</string>
     <string name="unexpected_error_web_mail">An unexpected error occurred while opening the web mail.</string>
     <string name="unexpected_error_web_mail_log">An unexpected error occurred while opening the web mail</string>
+
     <!-- Maps Strings -->
     <string name="google_maps_not_installed">Google Maps app is not installed</string>
     <string name="no_place_type_specified">No place type specified</string>
@@ -98,6 +101,8 @@
     <string name="received_response">Received Response:</string>
     <string name="an_error_occurred">An error occurred:</string>
     <string name="choose_email_app">Choose email app</string>
+
+
 
 
 
