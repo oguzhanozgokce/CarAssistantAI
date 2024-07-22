@@ -17,8 +17,6 @@ object Constant {
     const val YOUTUBE_WEB_URL = "https://www.youtube.com/watch?v="
     const val YOUTUBE_PACKET_NAME = "com.google.android.youtube"
     const val GOOGLE_MAPS_GEO_URL = "geo:0,0?q="
-    const val MAIL_TO = "mailto:"
-    const val MAIL_BASE_URL = "https://mail.google.com"
     const val GEMINI_MODEL_NAME = "gemini-1.5-pro"
     const val DESK_CLOCK_PACKAGE_NAME = "com.google.android.deskclock"
     const val DESK_CLOCK_CLASS_NAME = "com.android.deskclock.DeskClock"
@@ -28,5 +26,7 @@ object Constant {
     const val KEEP_WEB_URL = "https://keep.google.com"
     const val MAPS_UTILS_TAG = "MapUtils"
     const val NOTE_UTILS_TAG = "NoteUtils"
+    const val MAIL_PACKAGE_NAME = "com.google.android.gm"
+    const val MAIL_WEB_URL = "https://mail.google.com"
 
 }
