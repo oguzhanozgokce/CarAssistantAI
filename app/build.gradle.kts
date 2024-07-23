@@ -18,6 +18,7 @@ val geminiApiKey: String = localProperties.getProperty("GEMINI_API_KEY") ?: ""
 val youtubeApiKey: String = localProperties.getProperty("YOUTUBE_API_KEY") ?: ""
 val phoneNumber: String = localProperties.getProperty("PHONE_NUMBER") ?: ""
 val googleApiKey: String = localProperties.getProperty("GOOGLE_API_KEY") ?: ""
+val cx: String = localProperties.getProperty("CX") ?: ""
 
 
 android {
@@ -45,12 +46,14 @@ android {
             buildConfigField("String", "YOUTUBE_API_KEY", "\"${youtubeApiKey}\"")
             buildConfigField("String", "PHONE_NUMBER", "\"${phoneNumber}\"")
             buildConfigField("String", "GOOGLE_API_KEY", "\"${googleApiKey}\"")
+            buildConfigField("String", "CX", "\"${cx}\"")
         }
         getByName("debug") {
             buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
             buildConfigField("String", "YOUTUBE_API_KEY", "\"${youtubeApiKey}\"")
             buildConfigField("String", "PHONE_NUMBER", "\"${phoneNumber}\"")
             buildConfigField("String", "GOOGLE_API_KEY", "\"${googleApiKey}\"")
+            buildConfigField("String", "CX", "\"${cx}\"")
         }
     }
 
