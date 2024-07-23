@@ -6,8 +6,16 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.data.model.json.Command
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils.setAlarm
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.GoogleUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.SearchGoogle
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.mail.MailUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.notes.NoteUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.photo.PhotoUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.whatsapp.WhatsAppUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.youtube.YouTubeUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.camera.CameraUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.contact.ContactUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 import java.util.Locale
 
@@ -68,15 +76,10 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                             fragment.sendBotMessage(fragment.getString(R.string.no_query_specified_for_youtube))
                         }
                     }
-
                     "gallery" -> fragment.openGooglePhotos()
-                    //"spotify" -> fragment.openSpotify()
-                    "instagram" -> fragment.openInstagram()
-                    "twitter" -> fragment.openTwitter()
                     "camera" -> fragment.openCamera()
                     "clock" -> fragment.openClockApp()
                     "whatsapp" -> fragment.openWhatsApp()
-                    "keep" -> fragment.openKeep()
                     "stopwatch" -> fragment.startStopwatch()
                     "timer" -> {
                         val seconds = command.parameters.seconds
@@ -87,7 +90,6 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                             fragment.sendBotMessage(fragment.getString(R.string.no_timer_duration_specified))
                         }
                     }
-
                     "save_note" -> {
                         val noteContent = command.parameters.noteContent
                         if (!noteContent.isNullOrEmpty()) {
@@ -96,7 +98,6 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                             fragment.sendBotMessage(fragment.getString(R.string.no_note_content_specified))
                         }
                     }
-
                     "mail" -> {
                         val email = command.parameters.contactName
                         val subject = command.parameters.query
@@ -125,7 +126,6 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     }
                 }
             }
-
             "navigate" -> {
                 if (command.target.equals("googlemaps", ignoreCase = true)) {
                     val destination = command.parameters.destination
@@ -137,7 +137,6 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     }
                 }
             }
-
             "tweet" -> {
                 if (command.target.lowercase(Locale.getDefault()) == "twitter" &&
                     command.action.lowercase(Locale.getDefault()) == "create_tweet"
@@ -153,17 +152,6 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     fragment.sendBotMessage(fragment.getString(R.string.invalid_command))
                 }
             }
-            /*
-            "search" -> {
-                val query = command.parameters.query
-                if (!query.isNullOrEmpty()) {
-                    Log.d(TAG, "Search query: $query")
-                    fragment.openGoogleSearch(query)
-                } else {
-                    fragment.sendBotMessage(fragment.getString(R.string.no_search_query_specified))
-                }
-            }
-            */
             "call" -> {
                 val contactName = command.parameters.contactName
                 Log.d(TAG, "Contact name: $contactName")

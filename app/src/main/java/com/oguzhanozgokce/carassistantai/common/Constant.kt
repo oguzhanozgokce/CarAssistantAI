@@ -28,5 +28,6 @@ object Constant {
     const val NOTE_UTILS_TAG = "NoteUtils"
     const val MAIL_PACKAGE_NAME = "com.google.android.gm"
     const val MAIL_WEB_URL = "https://mail.google.com"
+    const val GOOGLE_SEARCH_API_URL = "https://www.googleapis.com/"
 
 }

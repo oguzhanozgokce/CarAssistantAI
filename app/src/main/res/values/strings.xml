@@ -67,6 +67,7 @@
     <string name="google_search_app_not_found">Google Search application not found</string>
     <string name="no_results_found">No results found</string>
     <string name="no_query_specified">No query specified</string>
+    <string name="no_app_found_to_open_link">No app found to open the link</string>
     <!-- CameraUtils Strings -->
     <string name="camera_app_not_found">Camera application not found.</string>
     <!-- Message Adapter -->

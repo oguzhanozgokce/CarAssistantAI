@@ -29,11 +29,9 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.contact.ContactUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.GoogleUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.SearchGoogle
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.instagram.InstagramUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.mail.MailUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.map.MapUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.photo.PhotoUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.spotify.SpotifyUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.whatsapp.WhatsAppUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.youtube.YouTubeUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.notes.NoteUtils
@@ -95,8 +93,9 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
     private fun observeViewModel() {
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
             adapter.setMessages(messages)
-            binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
+            scrollToBottom()
         }
+
 
         viewModel.isChatMode.observe(viewLifecycleOwner) { isChatMode ->
             if (isChatMode) {
@@ -134,12 +133,23 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
     }
     private fun sendMessage(message: Message) {
         viewModel.addMessage(message)
-        binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
+        scrollToBottom()
     }
+
     fun sendBotMessage(message: String) {
         val botMessage = Message(message, true)
         viewModel.addMessage(botMessage)
-        binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
+        scrollToBottom()
+    }
+    private fun scrollToBottom() {
+        binding.recyclerView.post {
+            if (adapter.itemCount > 0) {
+                binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
+                binding.scrollView?.post {
+                    binding.scrollView!!.fullScroll(View.FOCUS_DOWN)
+                }
+            }
+        }
     }
     private fun switchToChatMode() {
         binding.recyclerView.visible()
@@ -167,7 +177,7 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
                 responseMimeType = "text/plain"
             },
             systemInstruction = content {
-                text("Uygulamam sesli veya text ile çalışan asisstant uygulamasıdır. Kullanıcının kotmurlarını dinleyip analiz edip doğru işlemleri yaptırman gerekir. İki bölümden oluşuyor birincidi telefonun kendi içerisindeki komutlar mesela kamera açtırma, youtubedan şarkı açtırma, spotfy açtırma veya beni şuraya götür dediğinde haritayı açtırması gibi işlemlerden oluşuyor böyle komutları anladığında bana json türünde veri göndermeni istiyorum. Nasıl json komutları göndermen gerekitiğini yazacağım  \n\n\nJSON Formatı:\n\n```json\n{\n  \"type\": \"open\",\n  \"target\": \"YouTube\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Sezen Aksu Git\"\n  }\n}\n```\n\nKamera aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Camera\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nfotoğrafları aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Gallery\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}  \n  \n\nTwitter veya yeni adı x uygulamasını açmak isterse bana bu json verisini döndür\n\n{\n  \"type\": \"open\",\n  \"target\": \"twitter\", \n  \"action\": \"open\",\n  \"parameters\": {}\n}\n\nMesaj verip bunu tweet oluştur derse veya sana şu konuda bana tweet mesajı yaz derse sen mesaj oluşturup bu json verisini bana dön veya kullanıcı kendisi mesaj vermişse onu direkt bana dön\n{\n  \"type\": \"tweet\",\n  \"target\": \"twitter\",\n  \"action\": \"create_tweet\",\n  \"parameters\": {\n    \"message\": \"Bugün doğum günüm\"\n  }\n}\n\nSaat aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\nsaat uygulamasını aç\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Clock\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n  \nBurası önemli mesela senin erişmediğin durumlarda direk bu şekilde json döndür mesela kullanıcı spotfiy sezan aksun git şarkısı demiştir bunu döndür hava durumunu sormuştur bunu döndür veya bir şey arama istiyordur google dan bunu döndür yani çoğunlukla bu json ını döndür bana \n\n{\n  \"type\": \"open\",\n  \"target\": \"google_search\",\n  \"parameters\": {\n    \"query\": \"Fenerbahçe\"\n  }\n}\n\n\nBirisini arama komutu gelirse veya rehberden birisine ara derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n{\n  \"type\": \"call\",\n  \"target\": \"Contacts\",\n  \"action\": \"call\",\n  \"parameters\": {\n    \"contactName\": \"Buse\"\n  }\n}\n\nBirisini mesaj gönder komutu gelirse veya rehberden birisine mesaj gönder derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n\n  {\n  \"type\": \"message\",\n  \"target\": \"Contacts\",\n  \"action\": \"send\",\n  \"parameters\": {\n    \"contactName\": \"Buse\",\n    \"message\": \"merhaba\"\n  }\n}\n\nBir yere gitmek isterse veya yol tarifi derse veya beni götür derse bana bu json türünde veriyi gönder\n{\n  \"type\": \"navigate\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"route\",\n  \"parameters\": {\n    \"destination\": \"Beşiktaş Meydanı\"\n  }\n}\n\nMesela kullanıcı bana en iyi hastaneleri veya pizzacıları veya yakınlarındaki eczaneleri  göster derse bana bu json türünde veriyi döndür\n\n{\n  \"type\": \"show\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"placeType\": \"hospitals\"\n  }\n}\n\nMesela kullanıcı alarm kurdurmak isterse sana saat verirse alarm kur derse bunu anlayıp bana bu json türünü döndür\n{\n    \"type\": \"alarm\",\n    \"target\": \"Clock\",\n    \"action\": \"set\",\n    \"parameters\": {\n        \"time\": \"08:30\",\n        \"message\": \"Time to wake up\"\n    }\n}\n\nMail göndermek isterse kime göndereceği, query, message kısmı vs varsa  bunu anlayıp bana bu json türünü döndür\n\n{\n  \"type\": \"open\",\n  \"target\": \"mail\",\n  \"parameters\": {\n    \"contactName\": \"recipient@example.com\",\n    \"query\": \"Konu\",\n    \"message\": \"Mesaj içeriği\"\n  }\n}\n\nWhatsApp aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"whatsapp\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nNotlar ı aç komutu gelirse veya notlar uygulamasına gitmek istediğini anlarsa  bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"keep\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nKullanıcı notlara mesaj kayıt etmek isterse örnek = \"akşam toplantı var\" notlara kayıt et derse sende bunu anladıktan sonra bu json ı bana gönder\n\n{\n  \"type\": \"open\",\n  \"target\": \"save_note\",\n  \"action\": \"create_note\",\n  \"parameters\": {\n    \"noteContent\": \"akşam toplantı var\"\n  }\n}\n\n\nKronometre yi aç komutu gelirse veya kronometre yi başlat komutu gelirse analiz edip anlarsa bir şekilde bu json türünü gönder\n{\n\n\"type\": \"open\",\n\n\"target\": \"stopwatch\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nKullanıcı saniye verip zamanlayıcıyı ayarla derse veya başlat derse sen bunu anlarsan aşağıdaki json türünü döndür bana\n{\n  \"type\": \"open\",\n  \"target\": \"timer\",\n  \"action\": \"start\",\n  \"parameters\": {\n    \"seconds\": 300,\n    \"message\": \"Timer\"\n  }\n}\n\n\n\nbunlar dışında kalanları sen anlayıp kullancının sorunlarını nazik tatlı bir dille cevapla yapamadığın işlemler için özür dile. Bilgi sorularını vs cevaplayabilirsin\n")
+                text("Uygulamam sesli veya text ile çalışan asisstant uygulamasıdır. Kullanıcının kotmurlarını dinleyip analiz edip doğru işlemleri yaptırman gerekir. İki bölümden oluşuyor birincidi telefonun kendi içerisindeki komutlar mesela kamera açtırma, youtubedan şarkı açtırma, spotfy açtırma veya beni şuraya götür dediğinde haritayı açtırması gibi işlemlerden oluşuyor böyle komutları anladığında bana json türünde veri göndermeni istiyorum. Nasıl json komutları göndermen gerekitiğini yazacağım  \n\n\nJSON Formatı:\n\n```json\n{\n  \"type\": \"open\",\n  \"target\": \"YouTube\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Sezen Aksu Git\"\n  }\n}\n```\n\nKamera aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Camera\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nfotoğrafları aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Gallery\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}  \n  \n\nMesaj verip bunu tweet oluştur derse veya sana şu konuda bana tweet mesajı yaz derse sen mesaj oluşturup bu json verisini bana dön veya kullanıcı kendisi mesaj vermişse onu direkt bana dön\n{\n  \"type\": \"tweet\",\n  \"target\": \"twitter\",\n  \"action\": \"create_tweet\",\n  \"parameters\": {\n    \"message\": \"Bugün doğum günüm\"\n  }\n}\n\nSaat aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\nsaat uygulamasını aç\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Clock\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n  \nBurası önemli mesela senin erişmediğin durumlarda direk bu şekilde json döndür mesela kullanıcı spotfiy sezan aksun git şarkısı demiştir bunu döndür hava durumunu sormuştur bunu döndür veya bir şey arama istiyordur google dan bunu döndür ve twitter yeni adı x olan platforma girmek istiyordur  veya instagram demiştir sana instagrama girmek  istediğini anlarsan döndür veya notları aç demiştir sana   yani çoğunlukla bu json ını döndür bana \n\n{\n  \"type\": \"open\",\n  \"target\": \"google_search\",\n  \"parameters\": {\n    \"query\": \"Fenerbahçe\"\n  }\n}\n\n\nBirisini arama komutu gelirse veya rehberden birisine ara derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n{\n  \"type\": \"call\",\n  \"target\": \"Contacts\",\n  \"action\": \"call\",\n  \"parameters\": {\n    \"contactName\": \"Buse\"\n  }\n}\n\nBirisini mesaj gönder komutu gelirse veya rehberden birisine mesaj gönder derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n\n  {\n  \"type\": \"message\",\n  \"target\": \"Contacts\",\n  \"action\": \"send\",\n  \"parameters\": {\n    \"contactName\": \"Buse\",\n    \"message\": \"merhaba\"\n  }\n}\n\nBir yere gitmek isterse veya yol tarifi derse veya beni götür derse bana bu json türünde veriyi gönder\n{\n  \"type\": \"navigate\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"route\",\n  \"parameters\": {\n    \"destination\": \"Beşiktaş Meydanı\"\n  }\n}\n\nMesela kullanıcı bana en iyi hastaneleri veya pizzacıları veya yakınlarındaki eczaneleri  göster derse bana bu json türünde veriyi döndür\n\n{\n  \"type\": \"show\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"placeType\": \"hospitals\"\n  }\n}\n\nMesela kullanıcı alarm kurdurmak isterse sana saat verirse alarm kur derse bunu anlayıp bana bu json türünü döndür\n{\n    \"type\": \"alarm\",\n    \"target\": \"Clock\",\n    \"action\": \"set\",\n    \"parameters\": {\n        \"time\": \"08:30\",\n        \"message\": \"Time to wake up\"\n    }\n}\n\nMail göndermek isterse kime göndereceği, query, message kısmı vs varsa  bunu anlayıp bana bu json türünü döndür\n\n{\n  \"type\": \"open\",\n  \"target\": \"mail\",\n  \"parameters\": {\n    \"contactName\": \"recipient@example.com\",\n    \"query\": \"Konu\",\n    \"message\": \"Mesaj içeriği\"\n  }\n}\n\nWhatsApp aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"whatsapp\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n\n\nKullanıcı notlara mesaj kayıt etmek isterse örnek = \"akşam toplantı var\" notlara kayıt et derse sende bunu anladıktan sonra bu json ı bana gönder\n\n{\n  \"type\": \"open\",\n  \"target\": \"save_note\",\n  \"action\": \"create_note\",\n  \"parameters\": {\n    \"noteContent\": \"akşam toplantı var\"\n  }\n}\n\n\nKronometre yi aç komutu gelirse veya kronometre yi başlat komutu gelirse analiz edip anlarsa bir şekilde bu json türünü gönder\n{\n\n\"type\": \"open\",\n\n\"target\": \"stopwatch\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nKullanıcı saniye verip zamanlayıcıyı ayarla derse veya başlat derse sen bunu anlarsan aşağıdaki json türünü döndür bana\n{\n  \"type\": \"open\",\n  \"target\": \"timer\",\n  \"action\": \"start\",\n  \"parameters\": {\n    \"seconds\": 300,\n    \"message\": \"Timer\"\n  }\n}\n\n\n\nbunlar dışında kalanları sen anlayıp kullancının sorunlarını nazik tatlı bir dille cevapla yapamadığın işlemler için özür dile. Bilgi sorularını vs cevaplayabilirsin\n")
             }
         )
 
@@ -186,15 +196,9 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
         }
     }
 
-    fun openGoogleSearch(query: String) {
-        GoogleUtils.openGoogleSearch(requireContext(), query) { errorMessage ->
-            sendBotMessage(errorMessage)
-        }
-    }
     fun openLink(url: String) {
         GoogleUtils.openLink(requireContext(), url)
     }
-
     fun searchAndOpenYouTube(query: String) {
         YouTubeUtils.searchAndOpenYouTube(this, query)
     }
@@ -212,16 +216,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
     }
     fun openGooglePhotos() {
         PhotoUtils.openGooglePhotos(requireContext()) { errorMessage ->
-            sendBotMessage(errorMessage)
-        }
-    }
-    fun openSpotify() {
-        SpotifyUtils.openSpotify(requireContext()) { errorMessage ->
-            sendBotMessage(errorMessage)
-        }
-    }
-    fun openInstagram() {
-        InstagramUtils.openInstagram(requireContext()) { errorMessage ->
             sendBotMessage(errorMessage)
         }
     }
@@ -246,11 +240,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
     fun openClockApp() {
         AlarmUtils.showAlarms(requireContext())
     }
-    fun openKeep() {
-        NoteUtils.openKeep(requireContext()) { message ->
-            sendBotMessage(message)
-        }
-    }
     fun sendNoteKeep(noteContent: String) {
         NoteUtils.openKeepWithNote(requireContext(), noteContent) { message ->
             sendBotMessage(message)
@@ -263,11 +252,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
     }
     fun openWhatsApp() {
        WhatsAppUtils.openWhatsAppChatWithMyNumber(requireContext()) { message ->
-            sendBotMessage(message)
-        }
-    }
-    fun openTwitter() {
-        TwitterUtils.openTwitterApp(requireContext()) { message ->
             sendBotMessage(message)
         }
     }

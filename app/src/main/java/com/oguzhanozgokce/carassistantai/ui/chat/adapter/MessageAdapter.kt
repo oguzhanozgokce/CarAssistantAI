@@ -18,7 +18,6 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private const val VIEW_TYPE_BOT = 2
         private const val VIEW_TYPE_LOADING = 3
     }
-
     override fun getItemViewType(position: Int): Int {
         return when {
             messages[position].isLoading -> VIEW_TYPE_LOADING
@@ -45,7 +44,6 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val message = messages[position]
         when (holder) {
@@ -54,31 +52,24 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             is LoadingViewHolder -> holder.bind(message)
         }
     }
-
     override fun getItemCount(): Int = messages.size
-
-
     fun setMessages(newMessages: List<Message>) {
         messages.clear()
         messages.addAll(newMessages)
         notifyDataSetChanged()
     }
-
     inner class UserMessageViewHolder(private val binding: ItemMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.textUserMessage.text = message.content
         }
     }
-
     inner class BotMessageViewHolder(private val binding: ItemBotMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.textBotMessage.text = message.content
         }
     }
-
     inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(message: Message) {
-            // Animasyon zaten otomatik oynuyor, başka bir şey yapmaya gerek yok
         }
     }
 }
