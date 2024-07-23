@@ -20,10 +20,6 @@ class ChatBotViewModel : ViewModel() {
         _isChatMode.value = true
     }
 
-    fun setMessages(messages: List<Message>) {
-        _messages.value = messages.toMutableList()
-    }
-
     fun setChatMode(isChatMode: Boolean) {
         _isChatMode.value = isChatMode
     }

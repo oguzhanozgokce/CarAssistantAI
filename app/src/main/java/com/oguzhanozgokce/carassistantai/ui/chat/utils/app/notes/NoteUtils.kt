@@ -12,10 +12,6 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.AppUtils
 
 object NoteUtils {
 
-    fun openKeep(context: Context, sendBotMessage: (String) -> Unit) {
-        AppUtils.openApp(context, KEEP_PACKAGE_NAME, KEEP_WEB_URL, sendBotMessage, R.string.keep_app_not_found)
-    }
-
     fun openKeepWithNote(context: Context, noteContent: String, sendBotMessage: (String) -> Unit) {
         try {
             val intent = Intent(Intent.ACTION_SEND).apply {
