@@ -10,5 +10,6 @@ data class Parameters(
     val username: String? = null,
     val placeType : String? = null,
     val seconds: Int? = null,
-    val noteContent: String? = null
+    val noteContent: String? = null,
+    val url: String? = null
 )
