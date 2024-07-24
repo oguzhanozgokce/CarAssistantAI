@@ -1,8 +1,8 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.view
-
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -39,14 +39,17 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.twitter.TwitterUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.oguzhanozgokce.carassistantai.ui.PiPModeListener
 
-class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
+
+class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) , PiPModeListener {
     private val binding by viewBinding(FragmentChatBotBinding::bind)
     private val adapter by lazy { MessageAdapter() }
     private val commandProcessor by lazy { CommandProcessor(this) }
     private val viewModel: ChatBotViewModel by viewModels()
     private lateinit var speechRecognizerHelper: SpeechRecognizerHelper
     private lateinit var searchGoogle: SearchGoogle
+
 
     val requestContactPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
         val allGranted = permissions.entries.all { it.value }
@@ -83,6 +86,32 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
             sendMessage(Message("Welcome!", true))
             sendMessage(Message(getString(R.string.app_intro),true))
         }
+    }
+
+    override fun onPictureInPictureMode(isInPictureInPictureMode: Boolean) {
+        if (isInPictureInPictureMode) {
+            enterPiPModeUI()
+        } else {
+            exitPiPModeUI()
+        }
+    }
+
+    private fun enterPiPModeUI() {
+        binding.textViewTitle.gone()
+        binding.buttonMic.visible()
+        binding.scrollView?.gone()
+        binding.messageInputLayout.gone()
+        binding.buttonSend.gone()
+        binding.editTextMessage.gone()
+    }
+
+    private fun exitPiPModeUI() {
+        binding.textViewTitle.visible()
+        binding.scrollView?.visible()
+        binding.messageInputLayout.visible()
+        binding.buttonMic.visible()
+        binding.buttonSend.visible()
+        binding.editTextMessage.visible()
     }
 
     private fun setupUI() {
@@ -260,4 +289,5 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
             sendBotMessage(errorMessage)
         }
     }
+
 }

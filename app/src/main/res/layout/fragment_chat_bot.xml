@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
     android:background="@color/background_color"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.chat.view.ChatBotFragment">
 
     <TextView
         android:id="@+id/textViewTitle"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/chat_car"
         android:textSize="24sp"
@@ -63,7 +63,7 @@
         <EditText
             android:id="@+id/editTextMessage"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:autofillHints="Type a message"
             android:hint="@string/type_a_message"
@@ -76,8 +76,8 @@
 
         <ImageView
             android:id="@+id/buttonSend"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@drawable/round_button_background"
             android:contentDescription="@string/send_message"
             android:padding="10dp"
@@ -86,14 +86,12 @@
 
         <ImageView
             android:id="@+id/buttonMic"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@drawable/round_button_mic_background"
             android:contentDescription="@string/microphone"
             android:padding="10dp"
             android:src="@drawable/svg_mic"
             android:layout_marginStart="4dp" />
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
