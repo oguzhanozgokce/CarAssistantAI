@@ -2,7 +2,6 @@ package com.oguzhanozgokce.carassistantai.ui.chat.view
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -39,10 +38,9 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.twitter.TwitterUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.oguzhanozgokce.carassistantai.ui.PiPModeListener
 
 
-class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) , PiPModeListener {
+class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
     private val binding by viewBinding(FragmentChatBotBinding::bind)
     private val adapter by lazy { MessageAdapter() }
     private val commandProcessor by lazy { CommandProcessor(this) }
@@ -88,31 +86,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) , PiPModeListener {
         }
     }
 
-    override fun onPictureInPictureMode(isInPictureInPictureMode: Boolean) {
-        if (isInPictureInPictureMode) {
-            enterPiPModeUI()
-        } else {
-            exitPiPModeUI()
-        }
-    }
-
-    private fun enterPiPModeUI() {
-        binding.textViewTitle.gone()
-        binding.buttonMic.visible()
-        binding.scrollView?.gone()
-        binding.messageInputLayout.gone()
-        binding.buttonSend.gone()
-        binding.editTextMessage.gone()
-    }
-
-    private fun exitPiPModeUI() {
-        binding.textViewTitle.visible()
-        binding.scrollView?.visible()
-        binding.messageInputLayout.visible()
-        binding.buttonMic.visible()
-        binding.buttonSend.visible()
-        binding.editTextMessage.visible()
-    }
 
     private fun setupUI() {
         setupRecyclerView()
@@ -144,6 +117,9 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) , PiPModeListener {
         binding.buttonMic.setOnClickListener {
             speechRecognizerHelper.startVoiceInput()
         }
+    }
+    fun startVoiceInput() {
+        speechRecognizerHelper.startVoiceInput()
     }
     private fun setupButtonSend() {
         binding.buttonSend.setOnClickListener {
