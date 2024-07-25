@@ -1,12 +1,12 @@
 package com.oguzhanozgokce.carassistantai
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.oguzhanozgokce.carassistantai.ui.FloatingWindowService
-import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,11 +16,26 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.oguzhanozgokce.carassistantai.databinding.ActivityMainBinding
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
+import com.oguzhanozgokce.carassistantai.ui.chat.view.OverlayPermissionDialogFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.OverlayPermissionDialogListener{
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private val REQUEST_CODE = 1234
+
+    private val overlayPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (Settings.canDrawOverlays(this)) {
+            Log.e("MainActivity", "Overlay permission granted")
+        } else {
+            Toast.makeText(
+                this,
+                "Overlay permission is needed to display the floating window",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,13 +61,19 @@ class MainActivity : AppCompatActivity() {
 
         // İzin kontrolü
         if (!Settings.canDrawOverlays(this)) {
-            requestOverlayPermission()
+            showOverlayPermissionDialog()
         }
+    }
+
+    private fun showOverlayPermissionDialog() {
+        val dialog = OverlayPermissionDialogFragment()
+        dialog.listener = this
+        dialog.show(supportFragmentManager, "OverlayPermissionDialog")
     }
 
     private fun requestOverlayPermission() {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-        startActivityForResult(intent, REQUEST_CODE)
+        overlayPermissionLauncher.launch(intent)
     }
 
     private fun startFloatingService() {
@@ -67,30 +88,20 @@ class MainActivity : AppCompatActivity() {
         Log.e("MainActivity", "Floating window service stopped")
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE) {
-            if (Settings.canDrawOverlays(this)) {
-                Log.e("MainActivity", "Overlay permission granted")
-            } else {
-                Toast.makeText(this, "Overlay permission is needed to display the floating window", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         stopFloatingService()
         //handleIntent(intent)
         Log.e("MainActivity", "onResume")
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         if (Settings.canDrawOverlays(this)) {
             startFloatingService()
         }
@@ -102,6 +113,23 @@ class MainActivity : AppCompatActivity() {
         setIntent(intent)
         //handleIntent(intent)
         Log.e("MainActivity", "onNewIntent")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopFloatingService()
+    }
+
+    override fun onGrantPermissionClicked() {
+        requestOverlayPermission()
+    }
+
+    override fun onNoGrantPermissionClicked() {
+        Toast.makeText(
+            this,
+            "Overlay permission is needed to display the floating window",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 //    private fun handleIntent(intent: Intent?) {

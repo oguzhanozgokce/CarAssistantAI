@@ -1,6 +1,5 @@
 package com.oguzhanozgokce.carassistantai.common
 
-
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver

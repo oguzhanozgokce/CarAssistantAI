@@ -15,4 +15,11 @@
     <color name="brown">#FFA52A2A</color>
     <color name="background_color">#1f2030</color>
     <color name="text_color">#f2f2f2</color>
+
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryLight">#BB86FC</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="lighter_gray">#E0E0E0</color>
+
 </resources>

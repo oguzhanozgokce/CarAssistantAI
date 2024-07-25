@@ -48,7 +48,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
     private lateinit var speechRecognizerHelper: SpeechRecognizerHelper
     private lateinit var searchGoogle: SearchGoogle
 
-
     val requestContactPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
         val allGranted = permissions.entries.all { it.value }
         if (allGranted) {
@@ -85,7 +84,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
             sendMessage(Message(getString(R.string.app_intro),true))
         }
     }
-
 
     private fun setupUI() {
         setupRecyclerView()
@@ -140,7 +138,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
         viewModel.addMessage(message)
         scrollToBottom()
     }
-
     fun sendBotMessage(message: String) {
         val botMessage = Message(message, true)
         viewModel.addMessage(botMessage)
@@ -265,5 +262,4 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
             sendBotMessage(errorMessage)
         }
     }
-
 }

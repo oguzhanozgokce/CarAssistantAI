@@ -14,6 +14,8 @@ import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import com.oguzhanozgokce.carassistantai.MainActivity
 import com.oguzhanozgokce.carassistantai.R
+import com.oguzhanozgokce.carassistantai.common.gone
+import com.oguzhanozgokce.carassistantai.common.visible
 
 class FloatingWindowService : Service() {
     private var windowManager: WindowManager? = null
@@ -133,10 +135,10 @@ class FloatingWindowService : Service() {
         }
     }
 
-    fun showMicButton() {
-        relativeLayout?.visibility = View.VISIBLE
+    private fun showMicButton() {
+        relativeLayout?.visible()
     }
-    fun hideMicButton() {
-        relativeLayout?.visibility = View.GONE
+    private fun hideMicButton() {
+        relativeLayout?.gone()
     }
 }
