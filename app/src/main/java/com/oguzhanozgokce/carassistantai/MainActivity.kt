@@ -17,6 +17,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.oguzhanozgokce.carassistantai.databinding.ActivityMainBinding
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import com.oguzhanozgokce.carassistantai.common.Constant.MAIN_ACTIVITY_TAG
 import com.oguzhanozgokce.carassistantai.ui.chat.view.OverlayPermissionDialogFragment
 
 class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.OverlayPermissionDialogListener{
@@ -27,11 +28,11 @@ class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.Overl
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (Settings.canDrawOverlays(this)) {
-            Log.e("MainActivity", "Overlay permission granted")
+            Log.e(MAIN_ACTIVITY_TAG, getString(R.string.overlay_permission_granted))
         } else {
             Toast.makeText(
                 this,
-                "Overlay permission is needed to display the floating window",
+                getString(R.string.overlay_permission_needed),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.Overl
     private fun showOverlayPermissionDialog() {
         val dialog = OverlayPermissionDialogFragment()
         dialog.listener = this
-        dialog.show(supportFragmentManager, "OverlayPermissionDialog")
+        dialog.show(supportFragmentManager, getString(R.string.overlay_permission_dialog))
     }
 
     private fun requestOverlayPermission() {
@@ -79,15 +80,14 @@ class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.Overl
     private fun startFloatingService() {
         val startServiceIntent = Intent(this, FloatingWindowService::class.java)
         ContextCompat.startForegroundService(this, startServiceIntent)
-        Log.e("MainActivity", "Floating window service started")
+        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.floating_window_service_started))
     }
 
     private fun stopFloatingService() {
         val stopServiceIntent = Intent(this, FloatingWindowService::class.java)
         stopService(stopServiceIntent)
-        Log.e("MainActivity", "Floating window service stopped")
+        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.floating_window_service_stopped))
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.Overl
         super.onStart()
         stopFloatingService()
         //handleIntent(intent)
-        Log.e("MainActivity", "onResume")
+        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.main_activity_on_resume))
     }
 
     override fun onStop() {
@@ -105,14 +105,14 @@ class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.Overl
         if (Settings.canDrawOverlays(this)) {
             startFloatingService()
         }
-        Log.e("MainActivity", "onPause")
+        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.main_activity_on_pause))
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         //handleIntent(intent)
-        Log.e("MainActivity", "onNewIntent")
+        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.main_activity_on_new_intent))
     }
 
     override fun onDestroy() {
@@ -127,10 +127,11 @@ class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.Overl
     override fun onNoGrantPermissionClicked() {
         Toast.makeText(
             this,
-            "Overlay permission is needed to display the floating window",
+            getString(R.string.overlay_permission_needed),
             Toast.LENGTH_SHORT
         ).show()
     }
+
 
 //    private fun handleIntent(intent: Intent?) {
 //        intent?.let {

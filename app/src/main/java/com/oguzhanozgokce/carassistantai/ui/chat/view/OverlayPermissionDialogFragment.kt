@@ -22,7 +22,6 @@ class OverlayPermissionDialogFragment : DialogFragment() {
         val view = inflater.inflate(R.layout.popup_permission, null)
 
         val tvGrantPermission = view.findViewById<TextView>(R.id.tv_grant_permission)
-        val tvNoGrantPermission = view.findViewById<TextView>(R.id.tv_no_grant_permission)
 
         tvGrantPermission.setOnClickListener {
             listener?.onGrantPermissionClicked()

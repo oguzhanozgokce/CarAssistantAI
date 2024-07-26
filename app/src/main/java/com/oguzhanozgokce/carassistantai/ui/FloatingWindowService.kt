@@ -32,7 +32,6 @@ class FloatingWindowService : Service() {
             val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
             floatingView = inflater.inflate(R.layout.floating_view_layout, null, false)
             relativeLayout = floatingView?.findViewById(R.id.relativeLayout)
-            Log.e("FloatingWindowService", "Floating view inflated")
 
             layoutParams = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -45,15 +44,11 @@ class FloatingWindowService : Service() {
                 x = 0
                 y = 100
             }
-            Log.e("FloatingWindowService", "LayoutParams created")
 
-            // Floating view'i ekleyin
             windowManager?.addView(floatingView, layoutParams)
-            Log.e("FloatingWindowService", "Floating view added")
 
             // Floating view'e tıklama ve kaydırma işlemlerini ekleyin
             floatingView?.setOnTouchListener(TouchListener())
-            Log.e("FloatingWindowService", "TouchListener set")
 
             // Call startForegroundService here to ensure the service starts in the foreground
             startForegroundService()
@@ -67,7 +62,6 @@ class FloatingWindowService : Service() {
         super.onDestroy()
         floatingView?.let {
             windowManager?.removeView(it)
-            Log.e("FloatingWindowService", "Floating view removed")
         }
         hideMicButton()
     }
@@ -108,19 +102,16 @@ class FloatingWindowService : Service() {
                     initialY = layoutParams?.y ?: 0
                     initialTouchX = motionEvent.rawX
                     initialTouchY = motionEvent.rawY
-                    Log.d("FloatingWindowService", "Touch down at ($initialTouchX, $initialTouchY)")
                     return true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     layoutParams?.x = initialX + (motionEvent.rawX - initialTouchX).toInt()
                     layoutParams?.y = initialY + (motionEvent.rawY - initialTouchY).toInt()
                     windowManager?.updateViewLayout(floatingView, layoutParams)
-                    Log.d("FloatingWindowService", "Touch move to (${layoutParams?.x}, ${layoutParams?.y})")
                     return true
                 }
                 MotionEvent.ACTION_UP -> {
                     view.performClick()
-                    Log.d("FloatingWindowService", "Touch up")
 
                     // MainActivity'yi başlat ve mikrofon dinlemeyi başlat
                     val intent = Intent(this@FloatingWindowService, MainActivity::class.java)

@@ -18,6 +18,16 @@
     <string name="car_image">Car image</string>
     <string name="modelName">gemini-1.5-flash</string>
 
+    <!-- Main Activity Strings -->
+    <string name="overlay_permission_dialog">OverlayPermissionDialog</string>
+    <string name="floating_window_service_started">Floating window service started</string>
+    <string name="floating_window_service_stopped">Floating window service stopped</string>
+    <string name="overlay_permission_needed">Overlay permission is needed to display the floating window</string>
+    <string name="main_activity_on_resume">MainActivity onResume</string>
+    <string name="main_activity_on_pause">MainActivity onPause</string>
+    <string name="main_activity_on_new_intent">MainActivity onNewIntent</string>
+    <string name="overlay_permission_granted">Overlay permission granted</string>
+
     <!-- Speech Recognition Strings -->
     <string name="listening_to_you">Listening to you…</string>
 
