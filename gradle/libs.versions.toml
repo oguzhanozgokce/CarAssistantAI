@@ -1,6 +1,6 @@
 [versions]
 agp = "8.5.1"
-databindingRuntime = "8.5.0"
+databindingRuntime = "8.5.1"
 generativeaiVersion = "0.9.0"
 googleApiClientAndroid = "1.32.1"
 googleApiServicesYoutube = "v3-rev222-1.25.0"
@@ -11,9 +11,9 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
-lifecycleViewmodelKtx = "2.8.3"
+lifecycleViewmodelKtx = "2.8.4"
 material = "1.12.0"
-activity = "1.9.0"
+activity = "1.9.1"
 constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
@@ -27,12 +27,14 @@ maps = "19.0.0"
 location = "21.3.0"
 lottie = "4.1.0"
 gson = "2.10.1"
+workRuntimeKtx = "2.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-databinding-runtime = { module = "androidx.databinding:databinding-runtime", version.ref = "databindingRuntime" }
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 generativeai-v060 = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeaiVersion" }
 google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClientAndroid" }
 google-api-services-youtube = { module = "com.google.apis:google-api-services-youtube", version.ref = "googleApiServicesYoutube" }

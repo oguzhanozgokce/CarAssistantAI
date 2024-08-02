@@ -1,43 +1,27 @@
 package com.oguzhanozgokce.carassistantai
 
-import android.app.AlertDialog
+import android.Manifest
 import android.content.Intent
-import android.net.Uri
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.oguzhanozgokce.carassistantai.ui.FloatingWindowService
-import android.provider.Settings
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.oguzhanozgokce.carassistantai.databinding.ActivityMainBinding
-import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
-import com.oguzhanozgokce.carassistantai.common.Constant.MAIN_ACTIVITY_TAG
-import com.oguzhanozgokce.carassistantai.ui.chat.view.OverlayPermissionDialogFragment
+import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognitionService
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
+import com.oguzhanozgokce.carassistantai.ui.chat.view.RecordAudioPermissionDialogFragment
 
-class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.OverlayPermissionDialogListener{
+class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-
-    private val overlayPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (Settings.canDrawOverlays(this)) {
-            Log.e(MAIN_ACTIVITY_TAG, getString(R.string.overlay_permission_granted))
-        } else {
-            Toast.makeText(
-                this,
-                getString(R.string.overlay_permission_needed),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -50,7 +34,8 @@ class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.Overl
                 systemBars.left,
                 systemBars.top,
                 systemBars.right,
-                systemBars.bottom)
+                systemBars.bottom
+            )
             insets
         }
         window.statusBarColor = android.graphics.Color.TRANSPARENT
@@ -60,91 +45,73 @@ class MainActivity : AppCompatActivity() , OverlayPermissionDialogFragment.Overl
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // İzin kontrolü
-        if (!Settings.canDrawOverlays(this)) {
-            showOverlayPermissionDialog()
+        if (!checkMicrophonePermission()) {
+            requestMicrophonePermission()
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        stopBackgroundService() // Stop the background service when the app is in the foreground
+    }
+
+    override fun onPause() {
+        super.onPause()
+        startBackgroundService() // Start the background service when the app goes to the background
+    }
+
+    private fun startBackgroundService() {
+        if (checkMicrophonePermission()) {
+            val serviceIntent = Intent(this, SpeechRecognitionService::class.java)
+            Log.d("MainActivity", "Starting background service")
+            startService(serviceIntent)
+        } else {
+            Log.e("MainActivity", "Microphone permission not granted")
         }
     }
 
-    private fun showOverlayPermissionDialog() {
-        val dialog = OverlayPermissionDialogFragment()
-        dialog.listener = this
-        dialog.show(supportFragmentManager, getString(R.string.overlay_permission_dialog))
+    private fun stopBackgroundService() {
+        val serviceIntent = Intent(this, SpeechRecognitionService::class.java)
+        stopService(serviceIntent)
     }
 
-    private fun requestOverlayPermission() {
-        val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-        overlayPermissionLauncher.launch(intent)
-    }
-
-    private fun startFloatingService() {
-        val startServiceIntent = Intent(this, FloatingWindowService::class.java)
-        ContextCompat.startForegroundService(this, startServiceIntent)
-        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.floating_window_service_started))
-    }
-
-    private fun stopFloatingService() {
-        val stopServiceIntent = Intent(this, FloatingWindowService::class.java)
-        stopService(stopServiceIntent)
-        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.floating_window_service_stopped))
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        stopFloatingService()
-        //handleIntent(intent)
-        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.main_activity_on_resume))
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (Settings.canDrawOverlays(this)) {
-            startFloatingService()
-        }
-        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.main_activity_on_pause))
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        //handleIntent(intent)
-        Log.e(MAIN_ACTIVITY_TAG, getString(R.string.main_activity_on_new_intent))
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopFloatingService()
-    }
-
-    override fun onGrantPermissionClicked() {
-        requestOverlayPermission()
-    }
-
-    override fun onNoGrantPermissionClicked() {
-        Toast.makeText(
+    private fun checkMicrophonePermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
             this,
-            getString(R.string.overlay_permission_needed),
-            Toast.LENGTH_SHORT
-        ).show()
+            Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestMicrophonePermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.RECORD_AUDIO),
+            REQUEST_MICROPHONE_PERMISSION
+        )
+    }
+
+    companion object {
+        private const val REQUEST_MICROPHONE_PERMISSION = 1
     }
 
 
-//    private fun handleIntent(intent: Intent?) {
-//        intent?.let {
-//            if (it.getBooleanExtra("START_MIC", false)) {
-//                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-//                val fragment = navHostFragment.childFragmentManager.primaryNavigationFragment
-//                if (fragment is ChatBotFragment) {
-//                    //fragment.startVoiceInput()
-//                    Log.e("MainActivity", "ChatBotFragment found, start voice input")
-//                } else {
-//                    Log.e("MainActivity", "ChatBotFragment not found")
-//                }
-//            }
-//        }
-//    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_MICROPHONE_PERMISSION) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                // Permission granted
+                startBackgroundService()
+            } else {
+                // Permission denied
+                Log.e("MainActivity", "Microphone permission denied")
+            }
+        }
+    }
+
 }

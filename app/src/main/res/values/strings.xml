@@ -27,6 +27,13 @@
     <string name="main_activity_on_pause">MainActivity onPause</string>
     <string name="main_activity_on_new_intent">MainActivity onNewIntent</string>
     <string name="overlay_permission_granted">Overlay permission granted</string>
+    <string name="record_audio_permission_granted">Record audio permission granted</string>
+    <string name="record_audio_permission_needed">Record audio permission is needed to use the speech recognition feature</string>
+    <string name="record_audio_permission_already_granted">Record audio permission is already granted</string>
+    <string name="location_permission_granted">Location permission granted</string>
+    <string name="location_permission_needed">Location permission is needed to use the location-based features</string>
+    <string name="main_activity_on_start">MainActivity onStart</string>
+    <string name="main_activity_on_stop">MainActivity onStop</string>
 
     <!-- Speech Recognition Strings -->
     <string name="listening_to_you">Listening to you…</string>

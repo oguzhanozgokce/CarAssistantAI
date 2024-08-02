@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/popup_background"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/popup_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/permisson_icon"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/popup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Record Audio Permission Required"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/popup_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This app needs permission to record audio. Please grant this permission to use the voice recognition feature."
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tv_grant_permission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Grant Permission"
+        android:textSize="16sp"
+        android:textColor="@color/colorPrimary"
+        android:gravity="center"
+        android:padding="16dp"
+        android:clickable="true"
+        android:background="?attr/selectableItemBackground"
+        android:focusable="true"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/lighter_gray"/>
+
+    <TextView
+        android:id="@+id/tv_no_grant_permission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Continue Without Permission"
+        android:textSize="16sp"
+        android:textColor="@color/colorPrimary"
+        android:gravity="center"
+        android:padding="16dp"
+        android:clickable="true"
+        android:background="?attr/selectableItemBackground"
+        android:focusable="true"/>
+
+</LinearLayout>
