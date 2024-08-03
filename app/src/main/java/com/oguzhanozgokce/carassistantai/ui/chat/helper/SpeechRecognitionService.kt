@@ -22,9 +22,7 @@ class SpeechRecognitionService : Service() {
     private lateinit var speechRecognizer: SpeechRecognizer
     private val triggerWord = "kara şimşek"
     private var isListening = false
-    // Handler for main thread operations
     private val mainHandler = Handler(Looper.getMainLooper())
-    // ExecutorService for background tasks
     private val executorService = Executors.newSingleThreadExecutor()
 
     override fun onCreate() {
