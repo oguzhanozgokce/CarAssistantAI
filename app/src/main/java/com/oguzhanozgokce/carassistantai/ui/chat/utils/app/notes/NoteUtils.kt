@@ -2,7 +2,6 @@ package com.oguzhanozgokce.carassistantai.ui.chat.utils.app.notes
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.Constant.KEEP_PACKAGE_NAME

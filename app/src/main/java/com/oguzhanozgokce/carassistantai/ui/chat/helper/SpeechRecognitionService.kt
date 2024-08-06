@@ -13,6 +13,7 @@ import android.speech.SpeechRecognizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.oguzhanozgokce.carassistantai.common.Constant.MY_INTENT
 import java.util.Locale
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -38,6 +39,7 @@ class SpeechRecognitionService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (checkMicrophonePermission()) {
             startListening()
+            Log.d("serves", "onStartCommand: ")
         } else {
             Log.e("SpeechService", "Microphone permission not granted")
         }
@@ -46,6 +48,7 @@ class SpeechRecognitionService : Service() {
 
     private fun startListening() {
         if (isListening) return
+        Log.d("serves", "Starting listening")
 
         val recognitionIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
@@ -73,30 +76,40 @@ class SpeechRecognitionService : Service() {
                 Log.d("SpeechService", "End of speech")
                 isListening = false
                 startListening() // Restart listening after speech ends
-                speechRecognizer.startListening(recognitionIntent)
+                Log.d("serves", "onEndOfSpeech: ")
+//                speechRecognizer.startListening(recognitionIntent)
             }
 
             override fun onError(error: Int) {
                 Log.e("SpeechService", "Error occurred: $error")
                 isListening = false
 
-                if (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) {
-                    mainHandler.postDelayed({
-                        startListening()
-                    }, 1000)
-                } else if (error == SpeechRecognizer.ERROR_CLIENT) {
-                    Log.e(
-                        "SpeechService",
-                        "Client error, check microphone permission and service availability."
-                    )
-                } else {
-                    handleError(error)
+                when (error) {
+                    SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> {
+                        Log.d("serves", "onError NO match: ")
+
+                        mainHandler.postDelayed({
+                            startListening()
+                        }, 1000)
+                    }
+                    SpeechRecognizer.ERROR_CLIENT -> {
+                        Log.e(
+                            "SpeechService",
+                            "Client error, check microphone permission and service availability."
+                        )
+                        Log.d("serves", "onError ERROR_CLIENT ")
+
+                    }
+                    else -> {
+                        handleError(error)
+                    }
                 }
             }
 
             override fun onResults(results: Bundle?) {
                 results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.let { result ->
                     if (result.isNotEmpty()) {
+                        Log.d("serves, ","onResults girdi")
                         val recognizedText = result[0].lowercase(Locale.getDefault())
                         Log.d("SpeechService", "Recognized: $recognizedText")
                         if (recognizedText.contains(triggerWord.lowercase(Locale.getDefault()))) {
@@ -108,7 +121,9 @@ class SpeechRecognitionService : Service() {
                 }
                 isListening = false
                 startListening() // Restart listening for continuous recognition
+                Log.d("serves", "onResults çıktı ")
             }
+
 
             override fun onPartialResults(partialResults: Bundle?) {
                 partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
@@ -142,7 +157,7 @@ class SpeechRecognitionService : Service() {
         }
     }
     private fun sendCommandToFragment(command: String) {
-        val intent = Intent("com.oguzhanozgokce.carassistantai.SpeechCommand").apply {
+        val intent = Intent(MY_INTENT).apply {
             putExtra("COMMAND", command)
         }
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
@@ -161,6 +176,8 @@ class SpeechRecognitionService : Service() {
                 mainHandler.postDelayed({
                     Log.e("SpeechService", "Error recognizer busy or insufficient permissions")
                     startListening()
+                    Log.d("serves", "handleError")
+
                 }, 2000)
             }
 
@@ -168,6 +185,8 @@ class SpeechRecognitionService : Service() {
                 mainHandler.postDelayed({
                     Log.e("SpeechService", "Error occurred: $error")
                     startListening()
+                    Log.d("serves", "delay")
+
                 }, 1000)
             }
         }

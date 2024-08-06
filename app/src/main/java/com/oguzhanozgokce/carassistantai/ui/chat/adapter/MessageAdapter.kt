@@ -10,7 +10,9 @@ import com.oguzhanozgokce.carassistantai.databinding.ItemBotMessageBinding
 import com.oguzhanozgokce.carassistantai.databinding.ItemMessageBinding
 
 
-class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MessageAdapter(
+    private val onMicClick : (String) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val messages: MutableList<Message> = mutableListOf()
 
     companion object {
@@ -66,6 +68,10 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class BotMessageViewHolder(private val binding: ItemBotMessageBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.textBotMessage.text = message.content
+
+            binding.microphoneIcon.setOnClickListener {
+                onMicClick(message.content)
+            }
         }
     }
     inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

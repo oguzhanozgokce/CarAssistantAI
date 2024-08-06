@@ -1,4 +1,4 @@
-package com.oguzhanozgokce.carassistantai.ui.chat.utils
+package com.oguzhanozgokce.carassistantai.ui.chat.utils.command
 
 import android.util.Log
 import com.google.gson.Gson
@@ -6,18 +6,8 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.data.model.json.Command
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.GoogleUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.SearchGoogle
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.mail.MailUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.notes.NoteUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.photo.PhotoUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.whatsapp.WhatsAppUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.youtube.YouTubeUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.camera.CameraUtils
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.contact.ContactUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
-import java.util.Locale
 
 class CommandProcessor(private val fragment: ChatBotFragment) {
 
@@ -33,7 +23,6 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
         try {
             Log.d(TAG, "${fragment.getString(R.string.received_response)}: $response")
             val strippedResponse = response.trim().removeSurrounding("```json", "```").trim()
-            // Is your response a valid JSON?
             if (isJson(strippedResponse)) {
                 val commandType = object : TypeToken<Command>() {}.type
                 val command = gson.fromJson<Command>(strippedResponse, commandType)
@@ -64,10 +53,10 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
     }
 
     private fun handleCommand(command: Command) {
-        when (command.type.lowercase(Locale.getDefault())) {
-            "open" -> {
-                when (command.target.lowercase(Locale.getDefault())) {
-                    "youtube" -> {
+        when (CommandType.fromString(command.type)) {
+            CommandType.OPEN -> {
+                when (CommandTarget.fromString(command.target)) {
+                    CommandTarget.YOUTUBE -> {
                         val query = command.parameters.query
                         if (!query.isNullOrEmpty()) {
                             Log.d(TAG, "YouTube query: $query")
@@ -76,12 +65,12 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                             fragment.sendBotMessage(fragment.getString(R.string.no_query_specified_for_youtube))
                         }
                     }
-                    "gallery" -> fragment.openGooglePhotos()
-                    "camera" -> fragment.openCamera()
-                    "clock" -> fragment.openClockApp()
-                    "whatsapp" -> fragment.openWhatsApp()
-                    "stopwatch" -> fragment.startStopwatch()
-                    "timer" -> {
+                    CommandTarget.GALLERY -> fragment.openGooglePhotos()
+                    CommandTarget.CAMERA -> fragment.openCamera()
+                    CommandTarget.CLOCK -> fragment.openClockApp()
+                    CommandTarget.WHATSAPP -> fragment.openWhatsApp()
+                    CommandTarget.STOPWATCH -> fragment.startStopwatch()
+                    CommandTarget.TIMER -> {
                         val seconds = command.parameters.seconds
                         val message = command.parameters.message ?: "Timer"
                         if (seconds != null) {
@@ -90,7 +79,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                             fragment.sendBotMessage(fragment.getString(R.string.no_timer_duration_specified))
                         }
                     }
-                    "save_note" -> {
+                    CommandTarget.SAVE_NOTE -> {
                         val noteContent = command.parameters.noteContent
                         if (!noteContent.isNullOrEmpty()) {
                             fragment.sendNoteKeep(noteContent)
@@ -98,7 +87,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                             fragment.sendBotMessage(fragment.getString(R.string.no_note_content_specified))
                         }
                     }
-                    "mail" -> {
+                    CommandTarget.MAIL -> {
                         val email = command.parameters.contactName
                         val subject = command.parameters.query
                         val body = command.parameters.message
@@ -108,7 +97,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                             fragment.sendBotMessage(fragment.getString(R.string.invalid_command))
                         }
                     }
-                    "google_search" -> {
+                    CommandTarget.GOOGLE_SEARCH -> {
                         val query = command.parameters.query
                         if (!query.isNullOrEmpty()) {
                             Log.d("CommandProcessor", "Querying Google for: $query")
@@ -124,10 +113,11 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                             fragment.sendBotMessage(fragment.getString(R.string.no_query_specified))
                         }
                     }
+                    else -> fragment.sendBotMessage(fragment.getString(R.string.invalid_command))
                 }
             }
-            "navigate" -> {
-                if (command.target.equals("googlemaps", ignoreCase = true)) {
+            CommandType.NAVIGATE -> {
+                if (CommandTarget.fromString(command.target) == CommandTarget.GOOGLE_MAPS) {
                     val destination = command.parameters.destination
                     if (!destination.isNullOrEmpty()) {
                         Log.d(TAG, "Destination after processing: $destination")
@@ -137,11 +127,10 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     }
                 }
             }
-            "tweet" -> {
-                if (command.target.lowercase(Locale.getDefault()) == "twitter" &&
-                    command.action.lowercase(Locale.getDefault()) == "create_tweet"
+            CommandType.TWEET -> {
+                if (CommandTarget.fromString(command.target) == CommandTarget.TWITTER &&
+                    command.action.equals("create_tweet", ignoreCase = true)
                 ) {
-
                     val message = command.parameters.message
                     if (!message.isNullOrEmpty()) {
                         fragment.tweet(message)
@@ -152,7 +141,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     fragment.sendBotMessage(fragment.getString(R.string.invalid_command))
                 }
             }
-            "call" -> {
+            CommandType.CALL -> {
                 val contactName = command.parameters.contactName
                 Log.d(TAG, "Contact name: $contactName")
                 if (!contactName.isNullOrEmpty()) {
@@ -161,8 +150,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     fragment.sendBotMessage(fragment.getString(R.string.no_contact_specified))
                 }
             }
-
-            "message" -> {
+            CommandType.MESSAGE -> {
                 val contactName = command.parameters.contactName
                 val message = command.parameters.message
                 if (!contactName.isNullOrEmpty() && !message.isNullOrEmpty()) {
@@ -171,8 +159,7 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     fragment.sendBotMessage(fragment.getString(R.string.insufficient_message_info))
                 }
             }
-
-            "alarm" -> {
+            CommandType.ALARM -> {
                 val time = command.parameters.time
                 val message = command.parameters.message ?: "Alarm"
                 if (!time.isNullOrEmpty()) {
@@ -189,9 +176,8 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     fragment.sendBotMessage(fragment.getString(R.string.could_not_understand_alarm_time))
                 }
             }
-
-            "show" -> {
-                if (command.target.equals("googlemaps", ignoreCase = true)) {
+            CommandType.SHOW -> {
+                if (CommandTarget.fromString(command.target) == CommandTarget.GOOGLE_MAPS) {
                     val placeType = command.parameters.placeType
                     if (!placeType.isNullOrEmpty()) {
                         Log.d(TAG, "Place type: $placeType")
@@ -201,16 +187,15 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                     }
                 }
             }
-
-            "unknown" -> {
+            CommandType.UNKNOWN -> {
                 fragment.sendToGeminiAndProcessCommand(command.toString()) { response ->
                     processCommand(response)
                 }
             }
-
             else -> {
                 fragment.sendBotMessage(fragment.getString(R.string.command_not_recognized))
             }
         }
     }
+
 }

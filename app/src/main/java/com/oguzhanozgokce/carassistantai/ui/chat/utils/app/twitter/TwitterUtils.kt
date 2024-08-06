@@ -6,8 +6,6 @@ import android.net.Uri
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.Constant.TWITTER_PACKAGE_NAME
 import com.oguzhanozgokce.carassistantai.common.Constant.TWITTER_SHARE_URL
-import com.oguzhanozgokce.carassistantai.common.Constant.TWITTER_WEB_URL
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.AppUtils
 
 object TwitterUtils {
 

@@ -1,7 +1,6 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google
 
 import android.content.Context
-import android.util.Log
 import com.oguzhanozgokce.carassistantai.BuildConfig
 import com.oguzhanozgokce.carassistantai.common.Constant.GOOGLE_SEARCH_API_URL
 import com.oguzhanozgokce.carassistantai.data.retrofit.GoogleSearchApi

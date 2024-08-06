@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +21,7 @@ import com.google.ai.client.generativeai.type.generationConfig
 import com.oguzhanozgokce.carassistantai.BuildConfig
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.Constant.GEMINI_MODEL_NAME
+import com.oguzhanozgokce.carassistantai.common.Constant.MY_INTENT
 import com.oguzhanozgokce.carassistantai.common.Constant.SYSTEM_INSTRUCTIONS
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.viewBinding
@@ -28,7 +30,7 @@ import com.oguzhanozgokce.carassistantai.data.model.message.Message
 import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
 import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognizerHelper
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.CommandProcessor
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.command.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.GoogleUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.SearchGoogle
@@ -44,15 +46,24 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.contact.ContactUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Locale
 
 
 class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
     private val binding by viewBinding(FragmentChatBotBinding::bind)
-    private val adapter by lazy { MessageAdapter() }
+    private val adapter by lazy { MessageAdapter{ messageContent ->
+        speakOut(messageContent)
+    } }
     private val commandProcessor by lazy { CommandProcessor(this) }
     private val viewModel: ChatBotViewModel by viewModels()
     private lateinit var speechRecognizerHelper: SpeechRecognizerHelper
     private lateinit var searchGoogle: SearchGoogle
+    private lateinit var textToSpeech: TextToSpeech
+
+    companion object {
+        const val TAG_TTS = "TextToSpeech"
+    }
+
 
     private val commandReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -99,7 +110,18 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
             sendMessage(Message(getString(R.string.app_intro),true))
         }
 
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(commandReceiver, IntentFilter("com.oguzhanozgokce.carassistantai.SpeechCommand"))
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(commandReceiver, IntentFilter(MY_INTENT))
+
+        textToSpeech = TextToSpeech(requireContext()) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = textToSpeech.setLanguage(Locale.getDefault())
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e(TAG_TTS, getString(R.string.tts_language_not_supported))
+                }
+            } else {
+                Log.e(TAG_TTS, getString(R.string.tts_initialization_failed))
+            }
+        }
 
 
     }
@@ -114,8 +136,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
             adapter.setMessages(messages)
             scrollToBottom()
         }
-
-
         viewModel.isChatMode.observe(viewLifecycleOwner) { isChatMode ->
             if (isChatMode) {
                 switchToChatMode()
@@ -130,11 +150,15 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
             layoutManager = LinearLayoutManager(context)
         }
     }
+    private fun speakOut(message: String) {
+        textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, null)
+    }
     private fun setupMicButton() {
         binding.buttonMic.setOnClickListener {
             speechRecognizerHelper.startVoiceInput()
         }
     }
+
     private fun setupButtonSend() {
         binding.buttonSend.setOnClickListener {
             val message = binding.editTextMessage.text.toString()
@@ -150,6 +174,7 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
             }
         }
     }
+
     fun receiveVoiceCommand(command: String) {
         sendMessage(Message(command, false))
         showLoadingAnimation()

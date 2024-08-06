@@ -3,11 +3,8 @@ package com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import com.oguzhanozgokce.carassistantai.R
-import com.oguzhanozgokce.carassistantai.common.Constant.GOOGLE_SEARCH_URL
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.AppUtils
 
 object GoogleUtils {
     private const val TAG = "GoogleUtils"

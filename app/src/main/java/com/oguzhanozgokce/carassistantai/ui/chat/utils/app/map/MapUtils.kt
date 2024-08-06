@@ -1,6 +1,5 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.utils.app.map
 
-
 import android.content.Intent
 import android.net.Uri
 import android.util.Log

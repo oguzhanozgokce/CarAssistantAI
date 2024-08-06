@@ -15,8 +15,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.oguzhanozgokce.carassistantai.databinding.ActivityMainBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognitionService
-import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
-import com.oguzhanozgokce.carassistantai.ui.chat.view.RecordAudioPermissionDialogFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,16 +49,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        stopBackgroundService() // Stop the background service when the app is in the foreground
+    override fun onStart() {
+        super.onStart()
+        stopBackgroundService() // Aktivite ön planda, arka plan servisini durdur.
+        Log.d("MainActivity", "start")
     }
 
-    override fun onPause() {
-        super.onPause()
-        startBackgroundService() // Start the background service when the app goes to the background
+    override fun onStop() {
+        super.onStop()
+        startBackgroundService() // Aktivite arka planda, arka plan servisini başlat.
+        Log.d("MainActivity", "stop")
     }
-
     private fun startBackgroundService() {
         if (checkMicrophonePermission()) {
             val serviceIntent = Intent(this, SpeechRecognitionService::class.java)
@@ -70,19 +69,16 @@ class MainActivity : AppCompatActivity() {
             Log.e("MainActivity", "Microphone permission not granted")
         }
     }
-
     private fun stopBackgroundService() {
         val serviceIntent = Intent(this, SpeechRecognitionService::class.java)
         stopService(serviceIntent)
     }
-
     private fun checkMicrophonePermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.RECORD_AUDIO
         ) == PackageManager.PERMISSION_GRANTED
     }
-
     private fun requestMicrophonePermission() {
         ActivityCompat.requestPermissions(
             this,
@@ -94,8 +90,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val REQUEST_MICROPHONE_PERMISSION = 1
     }
-
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

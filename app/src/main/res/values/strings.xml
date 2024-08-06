@@ -37,6 +37,9 @@
 
     <!-- Speech Recognition Strings -->
     <string name="listening_to_you">Listening to you…</string>
+    <!-- TexT To Speech Strings -->
+    <string name="tts_language_not_supported">Dil desteklenmiyor.</string>
+    <string name="tts_initialization_failed">TextToSpeech başlatılamadı.</string>
 
     <!-- Command Processor Strings -->
     <string name="no_query_specified_for_youtube">No query specified for YouTube search.</string>
