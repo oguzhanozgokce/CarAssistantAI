@@ -1,8 +1,5 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.view
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -12,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.asTextOrNull
@@ -21,7 +17,6 @@ import com.google.ai.client.generativeai.type.generationConfig
 import com.oguzhanozgokce.carassistantai.BuildConfig
 import com.oguzhanozgokce.carassistantai.R
 import com.oguzhanozgokce.carassistantai.common.Constant.GEMINI_MODEL_NAME
-import com.oguzhanozgokce.carassistantai.common.Constant.MY_INTENT
 import com.oguzhanozgokce.carassistantai.common.Constant.SYSTEM_INSTRUCTIONS
 import com.oguzhanozgokce.carassistantai.common.gone
 import com.oguzhanozgokce.carassistantai.common.viewBinding
@@ -30,7 +25,6 @@ import com.oguzhanozgokce.carassistantai.data.model.message.Message
 import com.oguzhanozgokce.carassistantai.databinding.FragmentChatBotBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.adapter.MessageAdapter
 import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognizerHelper
-import com.oguzhanozgokce.carassistantai.ui.chat.utils.command.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.alarm.AlarmUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.GoogleUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.google.SearchGoogle
@@ -42,6 +36,7 @@ import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.twitter.TwitterUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.whatsapp.WhatsAppUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.app.youtube.YouTubeUtils
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.camera.CameraUtils
+import com.oguzhanozgokce.carassistantai.ui.chat.utils.command.CommandProcessor
 import com.oguzhanozgokce.carassistantai.ui.chat.utils.contact.ContactUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,11 +44,13 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 
 
-class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
+class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
     private val binding by viewBinding(FragmentChatBotBinding::bind)
-    private val adapter by lazy { MessageAdapter{ messageContent ->
-        speakOut(messageContent)
-    } }
+    private val adapter by lazy {
+        MessageAdapter { messageContent ->
+            speakOut(messageContent)
+        }
+    }
     private val commandProcessor by lazy { CommandProcessor(this) }
     private val viewModel: ChatBotViewModel by viewModels()
     private lateinit var speechRecognizerHelper: SpeechRecognizerHelper
@@ -65,36 +62,29 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
     }
 
 
-    private val commandReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val command = intent?.getStringExtra("COMMAND")
-            command?.let {
-                receiveVoiceCommand(it)
+    val requestContactPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val allGranted = permissions.entries.all { it.value }
+            if (allGranted) {
+                // Handle the case where all permissions are granted
+            } else {
+                sendBotMessage(getString(R.string.permissions_not_granted))
             }
         }
-    }
-
-    val requestContactPermissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        val allGranted = permissions.entries.all { it.value }
-        if (allGranted) {
-            // Handle the case where all permissions are granted
-        } else {
-            sendBotMessage(getString(R.string.permissions_not_granted))
+    val cameraActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == AppCompatActivity.RESULT_OK) {
+                // Handle the camera result here
+            } else {
+                sendBotMessage(getString(R.string.camera_app_not_found))
+            }
         }
-    }
-    val cameraActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == AppCompatActivity.RESULT_OK) {
-            // Handle the camera result here
-        } else {
-            sendBotMessage(getString(R.string.camera_app_not_found))
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupUI()
         observeViewModel()
+
         searchGoogle = SearchGoogle(requireContext())
         speechRecognizerHelper = SpeechRecognizerHelper(this) { userMessage ->
             sendMessage(Message(userMessage, false))
@@ -107,10 +97,9 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
         if (savedInstanceState == null) {
             viewModel.setChatMode(false)
             sendMessage(Message("Welcome!", true))
-            sendMessage(Message(getString(R.string.app_intro),true))
+            sendMessage(Message(getString(R.string.app_intro), true))
         }
 
-        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(commandReceiver, IntentFilter(MY_INTENT))
 
         textToSpeech = TextToSpeech(requireContext()) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -122,15 +111,27 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
                 Log.e(TAG_TTS, getString(R.string.tts_initialization_failed))
             }
         }
-
-
+        arguments?.getString("COMMAND")?.let { command ->
+            receiveVoiceCommand(command)
+        }
     }
+
+
+    fun receiveVoiceCommand(command: String) {
+        sendMessage(Message(command, false))
+        Log.d("VoiceCommand", command)
+        sendToGeminiAndProcessCommand(command) { jsonResponse ->
+            commandProcessor.processCommand(jsonResponse)
+        }
+    }
+
 
     private fun setupUI() {
         setupRecyclerView()
         setupButtonSend()
         setupMicButton()
     }
+
     private fun observeViewModel() {
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
             adapter.setMessages(messages)
@@ -158,7 +159,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
             speechRecognizerHelper.startVoiceInput()
         }
     }
-
     private fun setupButtonSend() {
         binding.buttonSend.setOnClickListener {
             val message = binding.editTextMessage.text.toString()
@@ -172,16 +172,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
                     commandProcessor.processCommand(response)
                 }
             }
-        }
-    }
-
-    fun receiveVoiceCommand(command: String) {
-        sendMessage(Message(command, false))
-        showLoadingAnimation()
-        Log.d("VoiceCommand", command)
-        sendToGeminiAndProcessCommand(command) { jsonResponse ->
-            hideLoadingAnimation()
-            commandProcessor.processCommand(jsonResponse)
         }
     }
     private fun sendMessage(message: Message) {
@@ -217,6 +207,7 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
     fun hideLoadingAnimation() {
         viewModel.removeLoadingMessage()
     }
+
     fun sendToGeminiAndProcessCommand(prompt: String, callback: (String) -> Unit) {
         val generativeModel = GenerativeModel(
             modelName = GEMINI_MODEL_NAME,
@@ -238,7 +229,8 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
                 val response = withContext(Dispatchers.IO) {
                     generativeModel.generateContent(prompt)
                 }
-                val jsonResponse = response.candidates.first().content.parts.first().asTextOrNull() ?: ""
+                val jsonResponse =
+                    response.candidates.first().content.parts.first().asTextOrNull() ?: ""
                 Log.d(getString(R.string.gemini_response), jsonResponse)
                 callback(jsonResponse)
             } catch (e: Exception) {
@@ -247,6 +239,7 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
             }
         }
     }
+
     fun openLink(url: String) {
         GoogleUtils.openLink(requireContext(), url)
     }
@@ -302,7 +295,7 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot)  {
         }
     }
     fun openWhatsApp() {
-       WhatsAppUtils.openWhatsAppChatWithMyNumber(requireContext()) { message ->
+        WhatsAppUtils.openWhatsAppChatWithMyNumber(requireContext()) { message ->
             sendBotMessage(message)
         }
     }

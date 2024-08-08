@@ -1,6 +1,12 @@
 package com.oguzhanozgokce.carassistantai.ui.chat.helper
 
+import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -11,194 +17,148 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.oguzhanozgokce.carassistantai.common.Constant.MY_INTENT
+import com.oguzhanozgokce.carassistantai.MainActivity
+import com.oguzhanozgokce.carassistantai.R
 import java.util.Locale
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 class SpeechRecognitionService : Service() {
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private val triggerWord = "kara şimşek"
     private var isListening = false
-    private val mainHandler = Handler(Looper.getMainLooper())
-    private val executorService = Executors.newSingleThreadExecutor()
+    private lateinit var handler: Handler
 
     override fun onCreate() {
         super.onCreate()
-        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            Log.e("SpeechService", "Speech recognition is not available on this device.")
-            stopSelf()
-            return
-        }
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
-    }
+        handler = Handler(Looper.getMainLooper())
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (checkMicrophonePermission()) {
-            startListening()
-            Log.d("serves", "onStartCommand: ")
-        } else {
-            Log.e("SpeechService", "Microphone permission not granted")
-        }
-        return START_STICKY
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
+        speechRecognizer.setRecognitionListener(recognitionListener)
+
+        createNotificationChannel()
+        startForeground(NOTIFICATION_ID, createNotification("Listening for voice commands"))
+
+        startListening()
     }
 
     private fun startListening() {
-        if (isListening) return
-        Log.d("serves", "Starting listening")
-
-        val recognitionIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-            )
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-            putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)
-        }
-
-        speechRecognizer.setRecognitionListener(object : RecognitionListener {
-            override fun onReadyForSpeech(params: Bundle?) {
-                Log.d("SpeechService", "Ready for speech")
+        handler.post {
+            if (isListening) return@post
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                Log.e("SpeechRecognitionService", "Microphone permission not granted")
+                return@post
             }
-
-            override fun onBeginningOfSpeech() {
-                Log.d("SpeechService", "Speech begun")
+            val recognitionIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
             }
-
-            override fun onRmsChanged(rmsdB: Float) {}
-
-            override fun onBufferReceived(buffer: ByteArray?) {}
-
-            override fun onEndOfSpeech() {
-                Log.d("SpeechService", "End of speech")
-                isListening = false
-                startListening() // Restart listening after speech ends
-                Log.d("serves", "onEndOfSpeech: ")
-//                speechRecognizer.startListening(recognitionIntent)
-            }
-
-            override fun onError(error: Int) {
-                Log.e("SpeechService", "Error occurred: $error")
-                isListening = false
-
-                when (error) {
-                    SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> {
-                        Log.d("serves", "onError NO match: ")
-
-                        mainHandler.postDelayed({
-                            startListening()
-                        }, 1000)
-                    }
-                    SpeechRecognizer.ERROR_CLIENT -> {
-                        Log.e(
-                            "SpeechService",
-                            "Client error, check microphone permission and service availability."
-                        )
-                        Log.d("serves", "onError ERROR_CLIENT ")
-
-                    }
-                    else -> {
-                        handleError(error)
-                    }
-                }
-            }
-
-            override fun onResults(results: Bundle?) {
-                results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.let { result ->
-                    if (result.isNotEmpty()) {
-                        Log.d("serves, ","onResults girdi")
-                        val recognizedText = result[0].lowercase(Locale.getDefault())
-                        Log.d("SpeechService", "Recognized: $recognizedText")
-                        if (recognizedText.contains(triggerWord.lowercase(Locale.getDefault()))) {
-                            val command = recognizedText.substringAfter(triggerWord).trim()
-                            Log.d("SpeechService", "Command: $command")
-                            sendCommandToFragment(command)
-                        }
-                    }
-                }
-                isListening = false
-                startListening() // Restart listening for continuous recognition
-                Log.d("serves", "onResults çıktı ")
-            }
-
-
-            override fun onPartialResults(partialResults: Bundle?) {
-                partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    ?.let { partialResults ->
-                        if (partialResults.isNotEmpty()) {
-                            val partialText = partialResults.joinToString(separator = " ")
-                                .lowercase(Locale.getDefault())
-                            Log.d("SpeechService", "Partial result: $partialText")
-                            if (partialText.contains(triggerWord.lowercase(Locale.getDefault()))) {
-                                val command = partialText.substringAfter(triggerWord).trim()
-                                Log.d("SpeechService", "Partial command: $command")
-                            }
-                        }
-                    }
-            }
-
-            override fun onEvent(eventType: Int, params: Bundle?) {}
-        })
-
-        executorService.execute {
-            try {
-                TimeUnit.MILLISECONDS.sleep(500) // Delay to prevent immediate restart issues
-                mainHandler.post {
-                    speechRecognizer.startListening(recognitionIntent)
-                    isListening = true
-                    Log.d("SpeechService", "Listening started")
-                }
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
+            isListening = true
+            speechRecognizer.startListening(recognitionIntent)
         }
     }
-    private fun sendCommandToFragment(command: String) {
-        val intent = Intent(MY_INTENT).apply {
+
+    private fun stopListening() {
+        handler.post {
+            if (!isListening) return@post
+            speechRecognizer.stopListening()
+            isListening = false
+        }
+    }
+
+    private val recognitionListener = object : RecognitionListener {
+        override fun onReadyForSpeech(params: Bundle) {}
+        override fun onBeginningOfSpeech() {}
+        override fun onRmsChanged(rmsdB: Float) {}
+        override fun onBufferReceived(buffer: ByteArray) {}
+        override fun onEndOfSpeech() {
+            stopListening()
+            handler.postDelayed({ startListening() }, 2000)
+        }
+        override fun onError(error: Int) {
+            stopListening()
+            handler.postDelayed({ startListening() }, 2000)
+        }
+        override fun onResults(results: Bundle) {
+            val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+            if (!matches.isNullOrEmpty()) {
+                val recognizedText = matches[0]
+                if (recognizedText.lowercase(Locale.getDefault()).contains(triggerWord)) {
+                    val command = recognizedText.lowercase(Locale.getDefault()).substringAfter(triggerWord).trim()
+                    Log.d("SpeechRecognitionService", "Received command: $command")
+                    sendCommandToMainActivity(command)
+                    sendNotificationWithCommand(command)
+                }
+            }
+            stopListening()
+            handler.postDelayed({ startListening() }, 2000)
+        }
+        override fun onPartialResults(partialResults: Bundle) {}
+        override fun onEvent(eventType: Int, params: Bundle) {}
+    }
+
+    private fun sendCommandToMainActivity(command: String) {
+        val intent = Intent("com.example.app.COMMAND_RECEIVED").apply {
             putExtra("COMMAND", command)
+            Log.d("SpeechRecognitionService", "Sending command to MainActivity: $command")
         }
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
-    private fun checkMicrophonePermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            android.Manifest.permission.RECORD_AUDIO
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun handleError(error: Int) {
-        when (error) {
-            SpeechRecognizer.ERROR_RECOGNIZER_BUSY, SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
-                mainHandler.postDelayed({
-                    Log.e("SpeechService", "Error recognizer busy or insufficient permissions")
-                    startListening()
-                    Log.d("serves", "handleError")
-
-                }, 2000)
-            }
-
-            else -> {
-                mainHandler.postDelayed({
-                    Log.e("SpeechService", "Error occurred: $error")
-                    startListening()
-                    Log.d("serves", "delay")
-
-                }, 1000)
-            }
+    private fun sendNotificationWithCommand(command: String) {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("COMMAND", command)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("New Voice Command")
+            .setContentText(command)
+            .setSmallIcon(R.drawable.icon_mic)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        speechRecognizer.destroy()
-        executorService.shutdownNow()
+    private fun createNotificationChannel() {
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Speech Recognition Service",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Channel for Speech Recognition Service"
+        }
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.createNotificationChannel(channel)
+    }
+
+    private fun createNotification(contentText: String): Notification {
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Speech Recognition Service")
+            .setContentText(contentText)
+            .setSmallIcon(R.drawable.icon_mic)
+            .build()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopListening()
+        speechRecognizer.destroy()
+    }
+
+    companion object {
+        private const val CHANNEL_ID = "SpeechRecognitionServiceChannel"
+        private const val NOTIFICATION_ID = 1
     }
 }
