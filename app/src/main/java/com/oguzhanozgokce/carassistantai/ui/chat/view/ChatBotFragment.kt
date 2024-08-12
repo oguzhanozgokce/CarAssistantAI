@@ -61,7 +61,6 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
         const val TAG_TTS = "TextToSpeech"
     }
 
-
     val requestContactPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val allGranted = permissions.entries.all { it.value }

@@ -12,13 +12,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.oguzhanozgokce.carassistantai.databinding.ActivityMainBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.helper.SpeechRecognitionService
+import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,24 +41,8 @@ class MainActivity : AppCompatActivity() {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
             commandReceiver,
-            IntentFilter("com.example.app.COMMAND_RECEIVED")
+            IntentFilter("com.oguzhanozgokce.carassistantai.COMMAND_RECEIVED")
         )
-
-
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(
-                systemBars.left,
-                systemBars.top,
-                systemBars.right,
-                systemBars.bottom
-            )
-            insets
-        }
-
-        window.statusBarColor = android.graphics.Color.TRANSPARENT
-        binding.root.setBackgroundColor(resources.getColor(R.color.background_color, null))
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -73,20 +56,28 @@ class MainActivity : AppCompatActivity() {
             commandReceiver,
             IntentFilter("com.oguzhanozgokce.carassistantai.COMMAND_RECEIVED"), RECEIVER_EXPORTED
         )
-
     }
 
     private fun handleCommand(command: String) {
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
+        val chatBotFragment = supportFragmentManager.findFragmentByTag(ChatBotFragment::class.java.simpleName)
 
-        val bundle = Bundle().apply {
-            putString("COMMAND", command)
+        if (chatBotFragment == null) {
+            Log.d("MainActivity", "Launching ChatBotFragment")
+            val fragment = ChatBotFragment()
+            fragment.arguments = Bundle().apply {
+                putString("COMMAND", command)
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, fragment, ChatBotFragment::class.java.simpleName)
+                .addToBackStack(null)
+                .commitAllowingStateLoss()
+
+        } else {
+            Log.d("MainActivity", "Received command: $command")
+            (chatBotFragment as ChatBotFragment).receiveVoiceCommand(command)
         }
-
-        navController.navigate(R.id.chatBotFragment, bundle)
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -155,3 +146,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+

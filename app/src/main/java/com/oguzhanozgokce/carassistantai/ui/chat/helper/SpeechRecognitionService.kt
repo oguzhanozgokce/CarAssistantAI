@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -20,7 +19,6 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.oguzhanozgokce.carassistantai.MainActivity
 import com.oguzhanozgokce.carassistantai.R
 import java.util.Locale
 
@@ -90,7 +88,6 @@ class SpeechRecognitionService : Service() {
                     val command = recognizedText.lowercase(Locale.getDefault()).substringAfter(triggerWord).trim()
                     Log.d("SpeechRecognitionService", "Received command: $command")
                     sendCommandToMainActivity(command)
-                    sendNotificationWithCommand(command)
                 }
             }
             stopListening()
@@ -101,30 +98,11 @@ class SpeechRecognitionService : Service() {
     }
 
     private fun sendCommandToMainActivity(command: String) {
-        val intent = Intent("com.example.app.COMMAND_RECEIVED").apply {
+        val intent = Intent("com.oguzhanozgokce.carassistantai.COMMAND_RECEIVED").apply {
             putExtra("COMMAND", command)
             Log.d("SpeechRecognitionService", "Sending command to MainActivity: $command")
         }
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
-    }
-
-    private fun sendNotificationWithCommand(command: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            putExtra("COMMAND", command)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("New Voice Command")
-            .setContentText(command)
-            .setSmallIcon(R.drawable.icon_mic)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .build()
-
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     private fun createNotificationChannel() {
