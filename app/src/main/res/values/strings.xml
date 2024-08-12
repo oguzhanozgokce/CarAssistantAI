@@ -37,6 +37,14 @@
 
     <!-- Speech Recognition Strings -->
     <string name="listening_to_you">Listening to you…</string>
+
+    <string name="speech_recognition_unavailable">Speech recognition is not available on this device.</string>
+    <string name="microphone_permission_not_granted">Microphone permission not granted.</string>
+    <string name="voice_assistant">Voice Assistant</string>
+    <string name="listening_for_voice_input">Listening for voice input</string>
+    <string name="speak_now">Say something</string>
+
+
     <!-- TexT To Speech Strings -->
     <string name="tts_language_not_supported">Dil desteklenmiyor.</string>
     <string name="tts_initialization_failed">TextToSpeech başlatılamadı.</string>
@@ -122,9 +130,6 @@
     <string name="received_response">Received Response:</string>
     <string name="an_error_occurred">An error occurred:</string>
     <string name="choose_email_app">Choose email app</string>
-
-
-
 
 
     <!-- Gemini System Instruction -->
