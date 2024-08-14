@@ -31,11 +31,8 @@
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
 
     <application
@@ -51,11 +48,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:taskAffinity=""
             android:launchMode="singleTask"
-            android:resizeableActivity="true"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:windowSoftInputMode="adjustPan|stateAlwaysVisible"
-            android:supportsPictureInPicture="true">
+            android:resizeableActivity="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -63,13 +58,12 @@
         </activity>
 
         <service
-            android:name=".ui.chat.helper.SpeechRecognitionService"
-            android:exported="false"
-            android:foregroundServiceType="microphone">
-            <intent-filter>
-                <action android:name="android.intent.action.SPEECH_RECOGNIZER" />
-            </intent-filter>
+            android:name=".ui.chat.helper.VoiceAssistantService"
+            android:foregroundServiceType="microphone"
+            android:enabled="true"
+            android:exported="true">
         </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_MAPS_API_KEY" />

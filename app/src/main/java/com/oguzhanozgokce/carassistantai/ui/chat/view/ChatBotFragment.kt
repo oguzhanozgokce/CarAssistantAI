@@ -225,7 +225,7 @@ class ChatBotFragment : Fragment(R.layout.fragment_chat_bot) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val response = withContext(Dispatchers.IO) {
+                val response = withContext(Dispatchers.Main) {
                     generativeModel.generateContent(prompt)
                 }
                 val jsonResponse =
