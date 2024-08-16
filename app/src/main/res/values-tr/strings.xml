@@ -16,6 +16,8 @@
     <string name="welcome">Hoşgeldiniz</string>
     <string name="car_image">Araba resmi</string>
     <string name="modelName">gemini-1.5-flash</string>
+    <string name="GOOGLE_MAPS_API_KEY">AIzaSyBGhKZdJXpWbFmCyUAgeN6o9kbAnts0fDs</string>
+
 
     <!-- Main Activity Strings -->
     <string name="overlay_permission_dialog">Yer Paylaşımı İzni Diyaloğu</string>
