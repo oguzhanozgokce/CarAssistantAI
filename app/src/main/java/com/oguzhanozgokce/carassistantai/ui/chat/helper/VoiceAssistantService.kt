@@ -30,7 +30,6 @@ class VoiceAssistantService : Service() {
 
     private val channelID = "VoiceAssistantServiceChannel"
     private lateinit var speechRecognizer: SpeechRecognizer
-//    private val triggerWord = "kara"
 
     override fun onCreate() {
         super.onCreate()
@@ -92,12 +91,11 @@ class VoiceAssistantService : Service() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     CoroutineScope(Dispatchers.Main).launch {
                         startListening()
-                        Log.d("VoiceAssistantService", "Listening from ERROR_NO_MATCH")
+                        Log.d("VoiceAssistantService", getString(R.string.start_listening_from_error_no_match))
                     }
                 }, 6000)
             }
         }
-
 
         override fun onPartialResults(partialResults: Bundle) {}
         override fun onEvent(eventType: Int, params: Bundle) {}
@@ -106,25 +104,19 @@ class VoiceAssistantService : Service() {
             val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             if (!matches.isNullOrEmpty()) {
                 val recognizedText = matches[0]
-//                if (recognizedText.lowercase(Locale.getDefault()).contains(triggerWord)) {
-//                    val command = recognizedText.lowercase(Locale.getDefault()).substringAfter(triggerWord).trim()
-                    Log.d("SpeechRecognitionService", "Received Serves command: $recognizedText")
-                    sendCommandToActivity(recognizedText)
-                    Log.d("VoiceAssistantService", "Recognized: $recognizedText")
-                    showNotification("Voice Assistant", "Recognized: $recognizedText")
-                    returnToApp()
-//                }else{
-//                    Log.d("VoiceAssistantService", "No trigger word found")
-//                    showNotification("Voice Assistant", "No trigger word found")
-//                }
+                Log.d("SpeechRecognitionService", "Received Serves command: $recognizedText")
+                sendCommandToActivity(recognizedText)
+                Log.d("VoiceAssistantService", "Recognized: $recognizedText")
+                showNotification(getString(R.string.voice_assistant_title), getString(R.string.voice_assistant_recognized, recognizedText))
+                returnToApp()
             } else {
                 Log.d("VoiceAssistantService", "No results")
-                showNotification("Voice Assistant", "No results recognized")
+                showNotification(getString(R.string.voice_assistant_title), getString(R.string.voice_assistant_no_results))
             }
             CoroutineScope(Dispatchers.Main).launch {
                 delay(8000)
                 startListening()
-                Log.d("VoiceAssistantService", "Listening from onResults")
+                Log.d("VoiceAssistantService", getString(R.string.start_listening_from_results))
             }
         }
     }
@@ -133,14 +125,14 @@ class VoiceAssistantService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("VoiceAssistantService", "Service started")
         val input = intent?.getStringExtra("input") ?: ""
-        if (input == "Start listening") {
+        if (input == getString(R.string.start_listening_command)) {
             Log.d("VoiceAssistantService", "Start listening command received")
             CoroutineScope(Dispatchers.Main).launch {
                 startListening()
-                Log.d("VoiceAssistantService", "Listening from onStartCommand")
+                Log.d("VoiceAssistantService", getString(R.string.start_listening_command))
             }
         }
-        val notification = createNotification("Voice Assistant", "Listening for voice input")
+        val notification = createNotification(getString(R.string.voice_assistant_title), getString(R.string.voice_assistant_listening))
         startForeground(1, notification)
         return START_STICKY
     }
@@ -148,7 +140,7 @@ class VoiceAssistantService : Service() {
     private fun createNotificationChannel() {
         val serviceChannel = NotificationChannel(
             channelID,
-            "Voice Assistant Service Channel",
+            getString(R.string.voice_assistant_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT
         )
         val manager = getSystemService(NotificationManager::class.java)
@@ -177,7 +169,6 @@ class VoiceAssistantService : Service() {
         notificationManager.notify(1, notification)
     }
 
-
     private fun startListening() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(
@@ -185,7 +176,7 @@ class VoiceAssistantService : Service() {
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
         )
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say something")
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.say_something))
         intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 0L)
         intent.putExtra(
             RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS,
@@ -193,7 +184,6 @@ class VoiceAssistantService : Service() {
         )
         intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 1500L)
         speechRecognizer.startListening(intent)
-
     }
 
     private fun sendCommandToActivity(command: String) {

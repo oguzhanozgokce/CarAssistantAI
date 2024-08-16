@@ -131,6 +131,16 @@
     <string name="an_error_occurred">An error occurred:</string>
     <string name="choose_email_app">Choose email app</string>
 
+    <string name="voice_assistant_channel_name">Voice Assistant Service Channel</string>
+    <string name="voice_assistant_listening">Listening for voice input</string>
+    <string name="voice_assistant_no_results">No results recognized</string>
+    <string name="voice_assistant_recognized">Recognized: %1$s</string> <!-- %1$s burada recognizedText ile doldurulacak -->
+    <string name="say_something">Say something</string>
+    <string name="voice_assistant_title">Voice Assistant</string>
+    <string name="start_listening_command">Start listening</string>
+    <string name="start_listening_from_error_no_match">Listening from ERROR_NO_MATCH</string>
+    <string name="start_listening_from_results">Listening from onResults</string>
+
 
     <!-- Gemini System Instruction -->
     <string name="gemini_system_instruction">

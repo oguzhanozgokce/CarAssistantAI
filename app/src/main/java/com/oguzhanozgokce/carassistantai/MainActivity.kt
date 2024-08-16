@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -19,6 +20,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.oguzhanozgokce.carassistantai.databinding.ActivityMainBinding
 import com.oguzhanozgokce.carassistantai.ui.chat.helper.VoiceAssistantService
 import com.oguzhanozgokce.carassistantai.ui.chat.view.ChatBotFragment
+import java.util.Locale
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private val REQUEST_CODE_PERMISSIONS = 102
     private val REQUEST_CODE_OVERLAY_PERMISSION = 101
+    private var karaSimsekMode = false
 
     private val commandReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -68,15 +71,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleCommand(command: String) {
+        Log.d("MainActivity", "Received command: $command")
 
+        val lowerCommand = command.lowercase(Locale.getDefault())
+
+        when {
+            lowerCommand.contains("kara şimşek kapan") -> {
+                karaSimsekMode = false
+                Toast.makeText(this, "Kara Şimşek modu kapatıldı", Toast.LENGTH_SHORT).show()
+            }
+            lowerCommand.contains("kara şimşek açıl") -> {
+                karaSimsekMode = true
+                Toast.makeText(this, "Kara Şimşek modu aktif", Toast.LENGTH_SHORT).show()
+            }
+            karaSimsekMode -> {
+                sendCommandToChatBotFragment(command)
+            }
+            else -> {
+                Log.d("MainActivity", "Kara Şimşek modu aktif değil, komut işlenmedi.")
+            }
+        }
+    }
+
+    private fun sendCommandToChatBotFragment(command: String) {
         val chatBotFragment =
             supportFragmentManager.findFragmentByTag(ChatBotFragment::class.java.simpleName)
 
         if (chatBotFragment != null && chatBotFragment.isAdded) {
-            Log.d("MainActivity", "Received command: $command")
+            Log.d("MainActivity", "Received command in ChatBotFragment: $command")
             (chatBotFragment as ChatBotFragment).receiveVoiceCommand(command)
         } else {
-            Log.d("MainActivity", "Launching ChatBotFragment")
+            Log.d("MainActivity", "Launching ChatBotFragment with command: $command")
             val fragment = ChatBotFragment().apply {
                 arguments = Bundle().apply {
                     putString("COMMAND", command)
@@ -88,8 +113,6 @@ class MainActivity : AppCompatActivity() {
                 .commitAllowingStateLoss()
         }
     }
-
-
 
 
 

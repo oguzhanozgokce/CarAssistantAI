@@ -29,11 +29,9 @@ class CommandProcessor(private val fragment: ChatBotFragment) {
                 handleCommand(command)
                 Log.d(TAG, "Command: $command")
             } else {
-                // If not JSON, write as string
                 fragment.sendBotMessage(response)
             }
         } catch (e: JsonSyntaxException) {
-            // If JSON parsing fails, evaluate to string
             fragment.sendBotMessage(response)
         } catch (e: Exception) {
             fragment.hideLoadingAnimation()

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CarAssistantAI</string>
+    <string name="app_intro">Merhaba! Ben akıllı asistanınızım. Sesli veya yazılı komutlarınızı dinler, analiz eder ve çeşitli görevleri yerine getirebilirim.</string>
+    <string name="hello_blank_fragment">Boş fragman merhaba</string>
+    <string name="type_a_message">Bir mesaj yazın</string>
+    <string name="tell_me_a_joke">Bana bir fıkra anlat.</string>
+    <string name="how_can_i_help_you">Size nasıl yardımcı olabilirim?</string>
+    <string name="what_is_your_name">Adınız nedir?</string>
+    <string name="chat_car">Sohbet Arabası</string>
+    <string name="send_message">Mesaj gönder</string>
+    <string name="microphone">mikrofon</string>
+    <string name="start">Başlat</string>
+    <string name="assistant">Asistan</string>
+    <string name="ai_car">AI</string>
+    <string name="welcome">Hoşgeldiniz</string>
+    <string name="car_image">Araba resmi</string>
+    <string name="modelName">gemini-1.5-flash</string>
+
+    <!-- Main Activity Strings -->
+    <string name="overlay_permission_dialog">Yer Paylaşımı İzni Diyaloğu</string>
+    <string name="floating_window_service_started">Yüzer pencere hizmeti başlatıldı</string>
+    <string name="floating_window_service_stopped">Yüzer pencere hizmeti durduruldu</string>
+    <string name="overlay_permission_needed">Yüzer pencereyi göstermek için yer paylaşımı izni gereklidir</string>
+    <string name="main_activity_on_resume">MainActivity yeniden başlatıldı</string>
+    <string name="main_activity_on_pause">MainActivity duraklatıldı</string>
+    <string name="main_activity_on_new_intent">MainActivity yeni bir niyetle başlatıldı</string>
+    <string name="overlay_permission_granted">Yer paylaşımı izni verildi</string>
+    <string name="record_audio_permission_granted">Ses kaydı izni verildi</string>
+    <string name="record_audio_permission_needed">Konuşma tanıma özelliğini kullanmak için ses kaydı izni gereklidir</string>
+    <string name="record_audio_permission_already_granted">Ses kaydı izni zaten verilmiş</string>
+    <string name="location_permission_granted">Konum izni verildi</string>
+    <string name="location_permission_needed">Konum tabanlı özellikleri kullanmak için konum izni gereklidir</string>
+    <string name="main_activity_on_start">MainActivity başlatıldı</string>
+    <string name="main_activity_on_stop">MainActivity durduruldu</string>
+
+    <!-- Speech Recognition Strings -->
+    <string name="listening_to_you">Sizi dinliyorum…</string>
+    <string name="speech_recognition_unavailable">Bu cihazda konuşma tanıma kullanılamıyor.</string>
+    <string name="microphone_permission_not_granted">Mikrofon izni verilmedi.</string>
+    <string name="voice_assistant">Sesli Asistan</string>
+    <string name="listening_for_voice_input">Sesli giriş bekleniyor</string>
+    <string name="speak_now">Bir şey söyleyin</string>
+
+    <!-- Text To Speech Strings -->
+    <string name="tts_language_not_supported">Dil desteklenmiyor.</string>
+    <string name="tts_initialization_failed">TextToSpeech başlatılamadı.</string>
+
+    <!-- Command Processor Strings -->
+    <string name="no_query_specified_for_youtube">YouTube araması için sorgu belirtilmedi.</string>
+    <string name="no_destination_specified">Hedefinizi belirtmediniz.</string>
+    <string name="no_search_query_specified">Nerede arama yapmak istediğinizi belirtmediniz.</string>
+    <string name="no_contact_specified">Kimi aramak istediğinizi belirtmediniz.</string>
+    <string name="insufficient_message_info">Mesaj göndermek için yeterli bilgi vermediniz.</string>
+    <string name="alarm_set_for">Alarm %1$d:%2$d için ayarlandı</string>
+    <string name="invalid_alarm_time_format">Alarm için geçersiz saat formatı.</string>
+    <string name="could_not_understand_alarm_time">Alarm saatini anlayamadım.</string>
+    <string name="no_instagram_profile_specified">Instagram profili belirtilmedi.</string>
+    <string name="command_not_recognized">Komut tanınmadı.</string>
+
+    <!-- Alarm Strings -->
+    <string name="alarm_app_not_found">Alarm uygulaması bulunamadı</string>
+    <string name="stopwatch_started">Kronometre başlatıldı</string>
+    <string name="stopwatch_app_not_found">Kronometre uygulaması bulunamadı</string>
+    <string name="timer_set_for">Zamanlayıcı %1$d dakika %2$d saniye için ayarlandı</string>
+    <string name="timer_app_not_found">Zamanlayıcı uygulaması bulunamadı</string>
+    <string name="no_timer_duration_specified">Zamanlayıcı süresi belirtilmedi.</string>
+
+    <!-- Keep Strings -->
+    <string name="keep_opened">Google Keep açıldı</string>
+    <string name="keep_app_not_found">Google Keep uygulaması bulunamadı</string>
+    <string name="keep_opened_web">Google Keep webde açıldı</string>
+    <string name="keep_opened_with_note">Google Keep not ile açıldı</string>
+    <string name="no_note_content_specified">Google Keep not içeriği belirtilmedi</string>
+
+    <!-- SpotifyUtils Strings -->
+    <string name="error_opening_spotify_app">Spotify uygulaması açılırken bir hata oluştu.</string>
+    <string name="unexpected_error">Beklenmeyen bir hata oluştu.</string>
+    <string name="error_opening_spotify_web_app">Spotify web uygulaması açılırken beklenmeyen bir hata oluştu.</string>
+    <string name="error_searching_spotify_app">Spotify uygulamasında arama yapılırken bir hata oluştu.</string>
+
+    <!-- InstagramUtils Strings -->
+    <string name="error_opening_instagram_app">Instagram uygulaması açılırken bir hata oluştu.</string>
+    <string name="unexpected_error_instagram_app">Instagram uygulaması açılırken beklenmeyen bir hata oluştu.</string>
+    <string name="error_opening_instagram_web_app">Instagram web uygulaması açılırken beklenmeyen bir hata oluştu.</string>
+    <string name="unexpected_error_instagram_profile">Instagram profili açılırken beklenmeyen bir hata oluştu.</string>
+
+    <!-- TwitterUtils Strings -->
+    <string name="error_opening_twitter_app">Twitter uygulaması açılırken bir hata oluştu.</string>
+    <string name="invalid_command">Geçersiz komut</string>
+    <string name="no_message_specified">Mesaj belirtilmedi</string>
+
+    <!-- GoogleUtils Strings -->
+    <string name="google_search_uri">Google Arama URI: %1$s</string>
+    <string name="web_intent">Web Yönlendirme: %1$s</string>
+    <string name="web_intent_started_successfully">Web yönlendirme başarıyla başlatıldı</string>
+    <string name="google_search_app_not_found">Google Arama uygulaması bulunamadı</string>
+    <string name="no_results_found">Sonuç bulunamadı</string>
+    <string name="no_query_specified">Sorgu belirtilmedi</string>
+    <string name="no_app_found_to_open_link">Bağlantıyı açacak uygulama bulunamadı</string>
+
+    <!-- CameraUtils Strings -->
+    <string name="camera_app_not_found">Kamera uygulaması bulunamadı.</string>
+
+    <!-- Message Adapter -->
+    <string name="invalid_view_type">Geçersiz görüntü türü</string>
+
+    <!-- Permissions -->
+    <string name="permissions_not_granted">Gerekli izinler verilmedi</string>
+    <string name="storage_permissions_not_granted">Gerekli izinler verilmedi.</string>
+
+    <!-- Photo Strings -->
+    <string name="google_photos_not_installed">Google Fotoğraflar uygulaması yüklü değil.</string>
+
+    <!-- contact strings -->
+    <string name="contact_message_sending">Kişiye mesaj gönderiliyor.</string>
+    <string name="contact_not_found">%1$s adlı kişi bulunamadı.</string>
+    <string name="contact_calling">%1$s aranıyor…</string>
+
+    <!-- Mail Strings -->
+    <string name="no_email_app_found">Açılacak e-posta uygulaması bulunamadı. Web e-postası açılıyor…</string>
+    <string name="unexpected_error_email_app">E-posta uygulaması açılırken beklenmeyen bir hata oluştu.</string>
+    <string name="no_email_or_browser_found">Açılacak e-posta veya web tarayıcısı bulunamadı.</string>
+    <string name="no_browser_found_log">Web tarayıcısı bulunamadı.</string>
+    <string name="unexpected_error_web_mail">Web e-postası açılırken beklenmeyen bir hata oluştu.</string>
+    <string name="unexpected_error_web_mail_log">Web e-postası açılırken beklenmeyen bir hata oluştu.</string>
+
+    <!-- Maps Strings -->
+    <string name="google_maps_not_installed">Google Haritalar uygulaması yüklü değil</string>
+    <string name="no_place_type_specified">Yer türü belirtilmedi</string>
+
+    <!-- WhatsApp Strings -->
+    <string name="whatsapp_not_found">WhatsApp uygulaması bulunamadı</string>
+
+    <!-- Logcat Strings -->
+    <string name="destination">Hedef</string>
+    <string name="encode_des">Hedefi kodla</string>
+    <string name="gemini_response">Gemini Yanıtı</string>
+    <string name="received_response">Alınan Yanıt:</string>
+    <string name="an_error_occurred">Bir hata oluştu:</string>
+    <string name="choose_email_app">E-posta uygulamasını seçin</string>
+
+    <string name="voice_assistant_channel_name">Sesli Asistan Hizmet Kanalı</string>
+    <string name="voice_assistant_listening">Sesli giriş bekleniyor</string>
+    <string name="voice_assistant_no_results">Sonuç tanınmadı</string>
+    <string name="voice_assistant_recognized">Tanındı: %1$s</string> <!-- %1$s burada recognizedText ile doldurulacak -->
+    <string name="say_something">Bir şey söyleyin</string>
+    <string name="voice_assistant_title">Sesli Asistan</string>
+    <string name="start_listening_command">Dinlemeyi başlat</string>
+    <string name="start_listening_from_error_no_match">Hata olmadan dinlemeye başla</string>
+    <string name="start_listening_from_results">Sonuçlardan dinlemeye başla</string>
+
+    <!-- Gemini System Instruction -->
+    <string name="gemini_system_instruction">
+        "Uygulamam sesli veya text ile çalışan asisstant uygulamasıdır. Kullanıcının kotmurlarını dinleyip analiz edip doğru işlemleri yaptırman gerekir. İki bölümden oluşuyor birincidi telefonun kendi içerisindeki komutlar mesela kamera açtırma, youtubedan şarkı açtırma, spotfy açtırma veya beni şuraya götür dediğinde haritayı açtırması gibi işlemlerden oluşuyor böyle komutları anladığında bana json türünde veri göndermeni istiyorum. Nasıl json komutları göndermen gerekitiğini yazacağım  \n\n\nJSON Formatı:\n\n```json\n{\n  \"type\": \"open\",\n  \"target\": \"YouTube\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"query\": \"Sezen Aksu Git\"\n  }\n}\n```\n\nKamera aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Camera\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nfotoğrafları aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Gallery\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}  \n  \nSpotfy aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Spotify\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nSaat aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\nsaat uygulamasını aç\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Clock\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\n  \nEğerki kendisi arama yapmak isterse search varsa sen bu json türünü bana gönder\n\n{\n\n\"type\": \"search\",\n\n\"target\": \"Google\",\n\n\"action\": \"search\",\n\n\"parameters\": {  \n\"query\": \"Matematik\"\n\n}\n}  \n\nBirisini arama komutu gelirse veya rehberden birisine ara derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n{\n  \"type\": \"call\",\n  \"target\": \"Contacts\",\n  \"action\": \"call\",\n  \"parameters\": {\n    \"contactName\": \"Buse\"\n  }\n}\n\nBirisini mesaj gönder komutu gelirse veya rehberden birisine mesaj gönder derse bunu analiz edip istediğini anlarsan  bu json türünü gönder\n\n  {\n  \"type\": \"message\",\n  \"target\": \"Contacts\",\n  \"action\": \"send\",\n  \"parameters\": {\n    \"contactName\": \"Buse\",\n    \"message\": \"merhaba\"\n  }\n}\n\nBir yere gitmek isterse veya yol tarifi derse veya beni götür derse bana bu json türünde veriyi gönder\n{\n  \"type\": \"navigate\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"route\",\n  \"parameters\": {\n    \"destination\": \"Beşiktaş Meydanı\"\n  }\n}\n\nMesela kullanıcı bana en iyi hastaneleri veya pizzacıları veya yakınlarındaki eczaneleri  göster derse bana bu json türünde veriyi döndür\n\n{\n  \"type\": \"show\",\n  \"target\": \"GoogleMaps\",\n  \"action\": \"search\",\n  \"parameters\": {\n    \"placeType\": \"hospitals\"\n  }\n}\n\nMesela kullanıcı alarm kurdurmak isterse sana saat verirse alarm kur derse bunu anlayıp bana bu json türünü döndür\n{\n    \"type\": \"alarm\",\n    \"target\": \"Clock\",\n    \"action\": \"set\",\n    \"parameters\": {\n        \"time\": \"08:30\",\n        \"message\": \"Time to wake up\"\n    }\n}\n\nMail aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"Mail\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nWhatsApp aç komutu gelirse veya açmak istediğini anlarsan bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"whatsapp\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nNotlar ı aç komutu gelirse veya notlar uygulamasına gitmek istediğini anlarsa  bir şekilde bu json türünü gönder\n\n{\n\n\"type\": \"open\",\n\n\"target\": \"keep\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nKullanıcı notlara mesaj kayıt etmek isterse örnek = \"akşam toplantı var\" notlara kayıt et derse sende bunu anladıktan sonra bu json ı bana gönder\n\n{\n  \"type\": \"open\",\n  \"target\": \"save_note\",\n  \"action\": \"create_note\",\n  \"parameters\": {\n    \"noteContent\": \"akşam toplantı var\"\n  }\n}\n\n\nKronometre yi aç komutu gelirse veya kronometre yi başlat komutu gelirse analiz edip anlarsa bir şekilde bu json türünü gönder\n{\n\n\"type\": \"open\",\n\n\"target\": \"stopwatch\",\n\n\"action\": \"open\",\n\n\"parameters\": {}\n\n}\n\nKullanıcı saniye verip zamanlayıcıyı ayarla derse veya başlat derse sen bunu anlarsan aşağıdaki json türünü döndür bana\n{\n  \"type\": \"open\",\n  \"target\": \"timer\",\n  \"action\": \"start\",\n  \"parameters\": {\n    \"seconds\": 300,\n    \"message\": \"Timer\"\n  }\n}\n\n\n\nbunlar dışında kalanları sen anlayıp kullancının sorunlarını nazik tatlı bir dille cevapla yapamadığın işlemler için özür dile. Bilgi sorularını vs cevaplayabilirsin\n"
+    </string>
+
+</resources>
